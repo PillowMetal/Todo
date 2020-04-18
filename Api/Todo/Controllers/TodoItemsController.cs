@@ -19,21 +19,21 @@ namespace Todo.Controllers
 
         [HttpGet]
         [HttpHead]
-        public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems(string isComplete) => IsNullOrWhiteSpace(isComplete)
+        public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItemsAsync(string isComplete) => IsNullOrWhiteSpace(isComplete)
             ? await _context.TodoItems.Select(t => ItemToDto(t)).ToListAsync()
             : !TryParse(isComplete.Trim(), out bool flag)
                 ? (ActionResult<IEnumerable<TodoItemDto>>)BadRequest()
                 : await _context.TodoItems.Where(t => t.IsComplete == flag).Select(t => ItemToDto(t)).ToListAsync();
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItemDto>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(long id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             return todoItem == null ? (ActionResult<TodoItemDto>)NotFound() : ItemToDto(todoItem);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItemDto todoItemDto)
+        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemDto todoItemDto)
         {
             if (id != todoItemDto.Id)
                 return BadRequest();
@@ -59,7 +59,7 @@ namespace Todo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoItemDto>> PostTodoItem(TodoItem todoItemDto)
+        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItem todoItemDto)
         {
             var todoItem = new TodoItem
             {
@@ -70,11 +70,11 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> DeleteTodoItem(long id)
+        public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(long id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
