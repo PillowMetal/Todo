@@ -32,7 +32,7 @@ namespace Todo.Controllers
             }
 
             if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
-                query = query.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()));
+                query = query.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
 
             return query.ToList();
         }
@@ -45,14 +45,14 @@ namespace Todo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemDto todoItemDto)
+        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemCreationDto dto)
         {
             var todoItem = new TodoItem
             {
-                Name = todoItemDto.Name,
-                Project = todoItemDto.Tags.Split('|')[0],
-                Context = todoItemDto.Tags.Split('|')[1],
-                IsComplete = todoItemDto.IsComplete,
+                Name = dto.Name,
+                Project = dto.Project,
+                Context = dto.Context,
+                IsComplete = dto.IsComplete,
                 Secret = "Shhh!"
             };
 
@@ -63,20 +63,20 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemDto todoItemDto)
+        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemCreationDto dto)
         {
-            if (id != todoItemDto.Id)
-                return BadRequest();
+            //if (id != dto.Id)
+            //    return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
                 return NotFound();
 
-            todoItem.Name = todoItemDto.Name;
-            todoItem.Project = todoItemDto.Tags.Split('|')[0];
-            todoItem.Context = todoItemDto.Tags.Split('|')[1];
-            todoItem.IsComplete = todoItemDto.IsComplete;
+            todoItem.Name = dto.Name;
+            todoItem.Project = dto.Project;
+            todoItem.Context = dto.Context;
+            todoItem.IsComplete = dto.IsComplete;
 
             try
             {
