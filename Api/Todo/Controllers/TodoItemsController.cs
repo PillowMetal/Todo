@@ -19,11 +19,26 @@ namespace Todo.Controllers
 
         [HttpGet]
         [HttpHead]
-        public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItemsAsync(string isComplete) => IsNullOrWhiteSpace(isComplete)
-            ? await _context.TodoItems.Select(t => ItemToDto(t)).ToListAsync()
-            : !TryParse(isComplete.Trim(), out bool flag)
-                ? (ActionResult<IEnumerable<TodoItemDto>>)BadRequest()
-                : await _context.TodoItems.Where(t => t.IsComplete == flag).Select(t => ItemToDto(t)).ToListAsync();
+        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems(string isComplete, string searchQuery)
+        {
+            IEnumerable<TodoItemDto> query = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
+
+            if (!IsNullOrWhiteSpace(isComplete) || !IsNullOrWhiteSpace(searchQuery))
+            {
+                if (!IsNullOrWhiteSpace(isComplete))
+                {
+                    if (!TryParse(isComplete.Trim(), out bool flag))
+                        return BadRequest();
+
+                    query = query.Where(t => t.IsComplete == flag);
+                }
+
+                if (!IsNullOrWhiteSpace(searchQuery))
+                    query = query.Where(t => t.Name.Contains(searchQuery.Trim()));
+            }
+
+            return query.ToList();
+        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(long id)
@@ -70,7 +85,7 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpDelete("{id}")]
