@@ -44,6 +44,21 @@ namespace Todo.Controllers
             return todoItem == null ? (ActionResult<TodoItemDto>)NotFound() : ItemToDto(todoItem);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemDto todoItemDto)
+        {
+            var todoItem = new TodoItem
+            {
+                IsComplete = todoItemDto.IsComplete,
+                Name = todoItemDto.Name
+            };
+
+            _ = _context.TodoItems.Add(todoItem);
+            _ = await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemDto todoItemDto)
         {
@@ -68,21 +83,6 @@ namespace Todo.Controllers
             }
 
             return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItem todoItemDto)
-        {
-            var todoItem = new TodoItem
-            {
-                IsComplete = todoItemDto.IsComplete,
-                Name = todoItemDto.Name
-            };
-
-            _ = _context.TodoItems.Add(todoItem);
-            _ = await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpDelete("{id}")]
