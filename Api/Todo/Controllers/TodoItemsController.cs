@@ -19,23 +19,20 @@ namespace Todo.Controllers
 
         [HttpGet]
         [HttpHead]
-        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems(string isComplete, string searchQuery)
+        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             IEnumerable<TodoItemDto> query = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
 
-            if (!IsNullOrWhiteSpace(isComplete) || !IsNullOrWhiteSpace(searchQuery))
+            if (!IsNullOrWhiteSpace(parameters?.IsComplete))
             {
-                if (!IsNullOrWhiteSpace(isComplete))
-                {
-                    if (!TryParse(isComplete.Trim(), out bool flag))
-                        return BadRequest();
+                if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
+                    return BadRequest();
 
-                    query = query.Where(t => t.IsComplete == flag);
-                }
-
-                if (!IsNullOrWhiteSpace(searchQuery))
-                    query = query.Where(t => t.Name.Contains(searchQuery.Trim()));
+                query = query.Where(t => t.IsComplete == flag);
             }
+
+            if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
+                query = query.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()));
 
             return query.ToList();
         }
