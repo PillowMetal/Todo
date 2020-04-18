@@ -45,17 +45,9 @@ namespace Todo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemCreationDto dto)
+        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemCreateDto dto)
         {
-            var todoItem = new TodoItem
-            {
-                Name = dto.Name,
-                Project = dto.Project,
-                Context = dto.Context,
-                IsComplete = dto.IsComplete,
-                Secret = "Shhh!"
-            };
-
+            TodoItem todoItem = DtoToItem(dto);
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
@@ -63,7 +55,7 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemCreationDto dto)
+        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemCreateDto dto)
         {
             //if (id != dto.Id)
             //    return BadRequest();
@@ -112,6 +104,15 @@ namespace Todo.Controllers
             Name = todoItem.Name,
             Tags = $"{todoItem.Project}|{todoItem.Context}",
             IsComplete = todoItem.IsComplete
+        };
+
+        private static TodoItem DtoToItem(TodoItemCreateDto dto) => new TodoItem
+        {
+            Name = dto.Name,
+            Project = dto.Project,
+            Context = dto.Context,
+            IsComplete = dto.IsComplete,
+            Secret = "Shhh!"
         };
     }
 }

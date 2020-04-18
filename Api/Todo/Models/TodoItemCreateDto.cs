@@ -1,6 +1,6 @@
 namespace Todo.Models
 {
-    public class TodoItemCreationDto
+    public class TodoItemCreateDto
     {
         public string Name { get; set; }
         public string Project { get; set; }
