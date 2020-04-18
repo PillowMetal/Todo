@@ -49,8 +49,11 @@ namespace Todo.Controllers
         {
             var todoItem = new TodoItem
             {
+                Name = todoItemDto.Name,
+                Project = todoItemDto.Tags.Split('|')[0],
+                Context = todoItemDto.Tags.Split('|')[1],
                 IsComplete = todoItemDto.IsComplete,
-                Name = todoItemDto.Name
+                Secret = "Shhh!"
             };
 
             _ = _context.TodoItems.Add(todoItem);
@@ -71,6 +74,8 @@ namespace Todo.Controllers
                 return NotFound();
 
             todoItem.Name = todoItemDto.Name;
+            todoItem.Project = todoItemDto.Tags.Split('|')[0];
+            todoItem.Context = todoItemDto.Tags.Split('|')[1];
             todoItem.IsComplete = todoItemDto.IsComplete;
 
             try
@@ -105,6 +110,7 @@ namespace Todo.Controllers
         {
             Id = todoItem.Id,
             Name = todoItem.Name,
+            Tags = $"{todoItem.Project}|{todoItem.Context}",
             IsComplete = todoItem.IsComplete
         };
     }
