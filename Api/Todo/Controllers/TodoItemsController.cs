@@ -96,6 +96,13 @@ namespace Todo.Controllers
             return NoContent();
         }
 
+        [HttpOptions]
+        public IActionResult GetTodoItemsOptions()
+        {
+            Response.Headers.Add("Allow", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+            return Ok();
+        }
+
         private bool TodoItemExists(long id) => _context.TodoItems.Any(e => e.Id == id);
 
         private static TodoItemDto ItemToDto(TodoItem todoItem) => new TodoItemDto
