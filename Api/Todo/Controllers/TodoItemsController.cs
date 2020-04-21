@@ -57,18 +57,12 @@ namespace Todo.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemCreateDto dto)
         {
-            //if (id != dto.Id)
-            //    return BadRequest();
-
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
                 return NotFound();
 
-            todoItem.Name = dto.Name;
-            todoItem.Project = dto.Project;
-            todoItem.Context = dto.Context;
-            todoItem.IsComplete = dto.IsComplete;
+            DtoToItem(dto, todoItem);
 
             try
             {
@@ -103,7 +97,7 @@ namespace Todo.Controllers
             return Ok();
         }
 
-        private bool TodoItemExists(long id) => _context.TodoItems.Any(e => e.Id == id);
+        private bool TodoItemExists(long id) => _context.TodoItems.Any(t => t.Id == id);
 
         private static TodoItemDto ItemToDto(TodoItem todoItem) => new TodoItemDto
         {
@@ -121,5 +115,13 @@ namespace Todo.Controllers
             IsComplete = dto.IsComplete,
             Secret = "Shhh!"
         };
+
+        public static void DtoToItem(TodoItemCreateDto dto, TodoItem todoItem)
+        {
+            todoItem.Name = dto.Name;
+            todoItem.Project = dto.Project;
+            todoItem.Context = dto.Context;
+            todoItem.IsComplete = dto.IsComplete;
+        }
     }
 }
