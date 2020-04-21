@@ -17,8 +17,15 @@ namespace Todo.Controllers
 
         public TodoItemsController(TodoContext context) => _context = context;
 
-        [HttpGet]
+        [HttpOptions]
+        public IActionResult GetTodoItemsOptions()
+        {
+            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,DELETE");
+            return Ok();
+        }
+
         [HttpHead]
+        [HttpGet]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             IEnumerable<TodoItemDto> query = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
@@ -88,13 +95,6 @@ namespace Todo.Controllers
             _ = await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        [HttpOptions]
-        public IActionResult GetTodoItemsOptions()
-        {
-            Response.Headers.Add("Allow", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
-            return Ok();
         }
 
         private bool TodoItemExists(long id) => _context.TodoItems.Any(t => t.Id == id);
