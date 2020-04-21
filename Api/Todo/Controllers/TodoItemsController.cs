@@ -62,7 +62,7 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemCreateDto dto)
+        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemUpdateDto dto)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -116,7 +116,7 @@ namespace Todo.Controllers
             Secret = "Shhh!"
         };
 
-        public static void DtoToItem(TodoItemCreateDto dto, TodoItem todoItem)
+        public static void DtoToItem(TodoItemUpdateDto dto, TodoItem todoItem)
         {
             todoItem.Name = dto.Name;
             todoItem.Project = dto.Project;
