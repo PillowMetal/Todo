@@ -62,12 +62,18 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItemAsync(long id, TodoItemUpdateDto dto)
+        public async Task<ActionResult<TodoItem>> PutTodoItemAsync(long id, TodoItemUpdateDto dto)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
-                return NotFound();
+            {
+                todoItem = DtoToItem(dto);
+                todoItem.Id = id;
+                _ = _context.TodoItems.Add(todoItem);
+
+                return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
+            }
 
             DtoToItem(dto, todoItem);
 
