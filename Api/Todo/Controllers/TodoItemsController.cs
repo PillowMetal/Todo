@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -44,8 +45,8 @@ namespace Todo.Controllers
             return query.ToList();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(long id)
+        [HttpGet("{id}", Name = "GetTodoItems")]
+        public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             return todoItem == null ? (ActionResult<TodoItemDto>)NotFound() : ItemToDto(todoItem);
@@ -58,11 +59,11 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItem>> PutTodoItemAsync(long id, TodoItemUpdateDto dto)
+        public async Task<ActionResult<TodoItem>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -71,8 +72,9 @@ namespace Todo.Controllers
                 todoItem = DtoToItem(dto);
                 todoItem.Id = id;
                 _ = _context.TodoItems.Add(todoItem);
+                _ = await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetTodoItems), new { id = todoItem.Id }, ItemToDto(todoItem));
+                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
             }
 
             DtoToItem(dto, todoItem);
@@ -90,7 +92,7 @@ namespace Todo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(long id)
+        public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -103,7 +105,7 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        private bool TodoItemExists(long id) => _context.TodoItems.Any(t => t.Id == id);
+        private bool TodoItemExists(Guid id) => _context.TodoItems.Any(t => t.Id == id);
 
         private static TodoItemDto ItemToDto(TodoItem todoItem) => new TodoItemDto
         {
