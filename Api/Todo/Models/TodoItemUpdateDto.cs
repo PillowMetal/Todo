@@ -2,15 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Todo.Models
 {
-    public class TodoItemUpdateDto
+    public class TodoItemUpdateDto : TodoItemManipulationDto
     {
         [Required]
-        public string Name { get; set; }
-
-        public string Project { get; set; }
-        public string Context { get; set; }
-
-        [Required]
-        public bool IsComplete { get; set; }
+        public override string Project { get => base.Project; set => base.Project = value; }
     }
 }
