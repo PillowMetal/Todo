@@ -107,7 +107,7 @@ namespace Todo.Controllers
             IsComplete = todoItem.IsComplete
         };
 
-        private static TodoItem DtoToItem(TodoItemCreateDto dto) => new TodoItem
+        private static TodoItem DtoToItem(TodoItemManipulationDto dto) => new TodoItem
         {
             Name = dto.Name,
             Project = dto.Project,
