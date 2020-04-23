@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.Models;
@@ -91,6 +92,47 @@ namespace Todo.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<TodoItem>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
+        {
+            TodoItem todoItem = await _context.TodoItems.FindAsync(id);
+            var dto = new TodoItemUpdateDto();
+
+            if (todoItem == null)
+            {
+                document.ApplyTo(dto, ModelState);
+
+                if (!TryValidateModel(dto))
+                    return ValidationProblem(ModelState);
+
+                todoItem = DtoToItem(dto);
+                todoItem.Id = id;
+                _ = _context.TodoItems.Add(todoItem);
+                _ = await _context.SaveChangesAsync();
+
+                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+            }
+
+            dto = ItemToUpdateDto(todoItem);
+            document.ApplyTo(dto, ModelState);
+
+            if (!TryValidateModel(dto))
+                return ValidationProblem(ModelState);
+
+            DtoToItem(dto, todoItem);
+
+            try
+            {
+                _ = await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(Guid id)
         {
@@ -112,6 +154,14 @@ namespace Todo.Controllers
             Id = todoItem.Id,
             Name = todoItem.Name,
             Tags = $"{todoItem.Project}|{todoItem.Context}",
+            IsComplete = todoItem.IsComplete
+        };
+
+        private static TodoItemUpdateDto ItemToUpdateDto(TodoItem todoItem) => new TodoItemUpdateDto
+        {
+            Name = todoItem.Name,
+            Project = todoItem.Project,
+            Context = todoItem.Context,
             IsComplete = todoItem.IsComplete
         };
 

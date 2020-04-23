@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 using Todo.Models;
 
 namespace Todo
@@ -17,7 +18,11 @@ namespace Todo
         public static void ConfigureServices(IServiceCollection services)
         {
             _ = services.AddDbContext<TodoContext>(options => options.UseInMemoryDatabase("TodoList"));
-            _ = services.AddControllers(options => options.ReturnHttpNotAcceptable = true).AddXmlDataContractSerializerFormatters();
+
+            _ = services
+                .AddControllers(options => options.ReturnHttpNotAcceptable = true)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
+                .AddXmlDataContractSerializerFormatters();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
