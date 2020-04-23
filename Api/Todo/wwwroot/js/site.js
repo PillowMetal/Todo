@@ -10,10 +10,14 @@ function getItems() {
 
 function addItem() {
     const addNameTextbox = document.getElementById("add-name");
+    const addProjectTextbox = document.getElementById("add-project");
+    const addContextTextbox = document.getElementById("add-context");
 
     const item = {
         isComplete: false,
-        name: addNameTextbox.value.trim()
+        name: addNameTextbox.value.trim(),
+        project: addProjectTextbox.value.trim(),
+        context: addContextTextbox.value.trim()
     };
 
     fetch(uri, {
@@ -28,6 +32,8 @@ function addItem() {
         .then(() => {
             getItems();
             addNameTextbox.value = "";
+            addProjectTextbox.value = "";
+            addContextTextbox.value = "";
         })
         .catch(error => console.error("Unable to add item.", error));
 }
@@ -44,6 +50,8 @@ function displayEditForm(id) {
     const item = todos.find(t => t.id === id);
 
     document.getElementById("edit-name").value = item.name;
+    document.getElementById("edit-project").value = item.tags.split("|")[0];
+    document.getElementById("edit-context").value = item.tags.split("|")[1];
     document.getElementById("edit-id").value = item.id;
     document.getElementById("edit-isComplete").checked = item.isComplete;
     document.getElementById("editForm").style.display = "block";
@@ -52,9 +60,11 @@ function displayEditForm(id) {
 function updateItem() {
     const itemId = document.getElementById("edit-id").value;
     const item = {
-        id: parseInt(itemId, 10),
+        id: itemId,
         isComplete: document.getElementById("edit-isComplete").checked,
-        name: document.getElementById("edit-name").value.trim()
+        name: document.getElementById("edit-name").value.trim(),
+        project: document.getElementById("edit-project").value.trim(),
+        context: document.getElementById("edit-context").value.trim()
     };
 
     fetch(`${uri}/${itemId}`, {
@@ -99,11 +109,11 @@ function _displayItems(data) {
 
         const editButton = button.cloneNode(false);
         editButton.innerText = "Edit";
-        editButton.setAttribute("onclick", `displayEditForm(${item.id})`);
+        editButton.setAttribute("onclick", `displayEditForm("${item.id}")`);
 
         const deleteButton = button.cloneNode(false);
         deleteButton.innerText = "Delete";
-        deleteButton.setAttribute("onclick", `deleteItem(${item.id})`);
+        deleteButton.setAttribute("onclick", `deleteItem("${item.id}")`);
 
         const tr = tBody.insertRow();
 
@@ -111,14 +121,18 @@ function _displayItems(data) {
         td1.appendChild(isCompleteCheckbox);
 
         const td2 = tr.insertCell(1);
-        const textNode = document.createTextNode(item.name);
-        td2.appendChild(textNode);
+        const nameNode = document.createTextNode(item.name);
+        td2.appendChild(nameNode);
 
         const td3 = tr.insertCell(2);
-        td3.appendChild(editButton);
+        const contextNode = document.createTextNode(item.tags);
+        td3.appendChild(contextNode);
 
         const td4 = tr.insertCell(3);
-        td4.appendChild(deleteButton);
+        td4.appendChild(editButton);
+
+        const td5 = tr.insertCell(4);
+        td5.appendChild(deleteButton);
     });
 
     todos = data;
