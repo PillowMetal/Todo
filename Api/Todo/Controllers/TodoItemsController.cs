@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,22 +28,22 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet]
-        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
+        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([Fromenumerable] TodoItemParameters parameters)
         {
-            IEnumerable<TodoItemDto> query = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
+            IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
 
             if (!IsNullOrWhiteSpace(parameters?.IsComplete))
             {
                 if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
                     return BadRequest();
 
-                query = query.Where(t => t.IsComplete == flag);
+                enumerable = enumerable.Where(t => t.IsComplete == flag);
             }
 
-            if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
-                query = query.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
+            if (!IsNullOrWhiteSpace(parameters?.Searchenumerable))
+                enumerable = enumerable.Where(t => t.Name.Contains(parameters.Searchenumerable.Trim()) || t.Tags.Contains(parameters.Searchenumerable.Trim()));
 
-            return query.ToList();
+            return enumerable.ToList();
         }
 
         [HttpGet("{id}", Name = "GetTodoItems")]
