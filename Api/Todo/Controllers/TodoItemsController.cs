@@ -28,7 +28,7 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet]
-        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([Fromenumerable] TodoItemParameters parameters)
+        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
 
@@ -40,8 +40,8 @@ namespace Todo.Controllers
                 enumerable = enumerable.Where(t => t.IsComplete == flag);
             }
 
-            if (!IsNullOrWhiteSpace(parameters?.Searchenumerable))
-                enumerable = enumerable.Where(t => t.Name.Contains(parameters.Searchenumerable.Trim()) || t.Tags.Contains(parameters.Searchenumerable.Trim()));
+            if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
+                enumerable = enumerable.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
 
             return enumerable.ToList();
         }
