@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Todo.Helpers;
 using Todo.Models;
 using static System.Boolean;
 using static System.String;
+using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
 {
@@ -27,12 +31,12 @@ namespace Todo.Controllers
         }
 
         [HttpHead]
-        [HttpGet]
+        [HttpGet(Name = "GetTodoItems")]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
 
-            if (!IsNullOrWhiteSpace(parameters?.IsComplete))
+            if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
                 if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
                     return BadRequest();
@@ -40,13 +44,25 @@ namespace Todo.Controllers
                 enumerable = enumerable.Where(t => t.IsComplete == flag);
             }
 
-            if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
+            if (!IsNullOrWhiteSpace(parameters.SearchQuery))
                 enumerable = enumerable.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
 
-            return enumerable.ToList();
+            var pagedList = PagedList<TodoItemDto>.Create(enumerable.ToList(), parameters.PageNumber, parameters.PageSize);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
+            {
+                currentPage = pagedList.CurrentPage,
+                totalPages = pagedList.TotalPages,
+                pageSize = pagedList.PageSize,
+                totalCount = pagedList.TotalCount,
+                previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
+                nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
+            }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
+
+            return pagedList;
         }
 
-        [HttpGet("{id}", Name = "GetTodoItems")]
+        [HttpGet("{id}", Name = "GetTodoItem")]
         public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -60,11 +76,11 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItem>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
+        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -75,7 +91,7 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+                return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
             }
 
             DtoToItem(dto, todoItem);
@@ -93,7 +109,7 @@ namespace Todo.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<TodoItem>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             var dto = new TodoItemUpdateDto();
@@ -134,7 +150,7 @@ namespace Todo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(Guid id)
+        public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -174,12 +190,37 @@ namespace Todo.Controllers
             Secret = "Shhh!"
         };
 
-        public static void DtoToItem(TodoItemUpdateDto dto, TodoItem todoItem)
+        private static void DtoToItem(TodoItemManipulationDto dto, TodoItem todoItem)
         {
             todoItem.Name = dto.Name;
             todoItem.Project = dto.Project;
             todoItem.Context = dto.Context;
             todoItem.IsComplete = dto.IsComplete;
         }
+
+        private string CreateTodoItemsUri(TodoItemParameters parameters, ResourceUriType type) => type switch
+        {
+            PreviousPage => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageNumber = parameters.PageNumber - 1,
+                pageSize = parameters.PageSize
+            }),
+            NextPage => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageNumber = parameters.PageNumber + 1,
+                pageSize = parameters.PageSize
+            }),
+            _ => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageNumber = parameters.PageNumber,
+                pageSize = parameters.PageSize
+            })
+        };
     }
 }
