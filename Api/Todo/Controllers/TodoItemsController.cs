@@ -13,7 +13,9 @@ using Todo.Helpers;
 using Todo.Models;
 using Todo.Parameters;
 using static System.Boolean;
+using static System.DateTime;
 using static System.String;
+using static System.StringComparison;
 using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
@@ -52,6 +54,10 @@ namespace Todo.Controllers
                     t.Name.Contains(parameters.SearchQuery.Trim()) ||
                     t.Context.Contains(parameters.SearchQuery.Trim()) ||
                     t.Project.Contains(parameters.SearchQuery.Trim()));
+
+            if (!IsNullOrWhiteSpace(parameters.OrderBy))
+                if (parameters.OrderBy.Equals("tags", InvariantCultureIgnoreCase))
+                    queryable = queryable.OrderBy(t => t.Project).ThenBy(t => t.Context);
 
             var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageNumber, parameters.PageSize);
 
@@ -176,6 +182,7 @@ namespace Todo.Controllers
             Id = todoItem.Id,
             Name = todoItem.Name,
             Tags = $"{todoItem.Project}|{todoItem.Context}",
+            Age = (Today - todoItem.Date).Days,
             IsComplete = todoItem.IsComplete
         };
 
@@ -184,6 +191,7 @@ namespace Todo.Controllers
             Name = todoItem.Name,
             Project = todoItem.Project,
             Context = todoItem.Context,
+            Date = todoItem.Date,
             IsComplete = todoItem.IsComplete
         };
 
@@ -192,6 +200,7 @@ namespace Todo.Controllers
             Name = dto.Name,
             Project = dto.Project,
             Context = dto.Context,
+            Date = dto.Date,
             IsComplete = dto.IsComplete,
             Secret = "Shhh!"
         };
@@ -201,6 +210,7 @@ namespace Todo.Controllers
             todoItem.Name = dto.Name;
             todoItem.Project = dto.Project;
             todoItem.Context = dto.Context;
+            todoItem.Date = dto.Date;
             todoItem.IsComplete = dto.IsComplete;
         }
 
