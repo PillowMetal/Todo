@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Todo.Helpers
@@ -23,8 +22,7 @@ namespace Todo.Helpers
             AddRange(items);
         }
 
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public static PagedList<T> Create(IEnumerable<T> source, int pageNumber, int pageSize) =>
+        public static PagedList<T> Create(IQueryable<T> source, int pageNumber, int pageSize) =>
             new PagedList<T>(source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(), source.Count(), pageNumber, pageSize);
     }
 }

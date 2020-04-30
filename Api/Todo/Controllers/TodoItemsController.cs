@@ -34,20 +34,23 @@ namespace Todo.Controllers
         [HttpGet(Name = "GetTodoItems")]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
-            IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(ItemToDto).AsEnumerable();
+            IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
                 if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
                     return BadRequest();
 
-                enumerable = enumerable.Where(t => t.IsComplete == flag);
+                queryable = queryable.Where(t => t.IsComplete == flag);
             }
 
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
-                enumerable = enumerable.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
+                queryable = queryable.Where(t =>
+                    t.Name.Contains(parameters.SearchQuery.Trim()) ||
+                    t.Context.Contains(parameters.SearchQuery.Trim()) ||
+                    t.Project.Contains(parameters.SearchQuery.Trim()));
 
-            var pagedList = PagedList<TodoItemDto>.Create(enumerable, parameters.PageNumber, parameters.PageSize);
+            var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageNumber, parameters.PageSize);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
             {
@@ -59,7 +62,7 @@ namespace Todo.Controllers
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
-            return pagedList;
+            return pagedList.Select(ItemToDto).ToList();
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
