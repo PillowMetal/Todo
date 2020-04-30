@@ -34,7 +34,7 @@ namespace Todo.Controllers
         [HttpGet(Name = "GetTodoItems")]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
-            IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
+            IEnumerable<TodoItemDto> enumerable = _context.TodoItems.Select(ItemToDto).AsEnumerable();
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
@@ -47,7 +47,7 @@ namespace Todo.Controllers
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
                 enumerable = enumerable.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
 
-            var pagedList = PagedList<TodoItemDto>.Create(enumerable.ToList(), parameters.PageNumber, parameters.PageSize);
+            var pagedList = PagedList<TodoItemDto>.Create(enumerable, parameters.PageNumber, parameters.PageSize);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
             {
