@@ -12,6 +12,7 @@ namespace Todo.Entities
 
         public string Project { get; set; }
         public string Context { get; set; }
+        public DateTime Date { get; set; }
         public bool IsComplete { get; set; }
         public string Secret { get; set; }
     }
