@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Todo.Contexts;
+using Todo.Entities;
 using Todo.Helpers;
 using Todo.Models;
+using Todo.Parameters;
 using static System.Boolean;
 using static System.String;
 using static Todo.Helpers.ResourceUriType;
@@ -54,10 +57,10 @@ namespace Todo.Controllers
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
             {
-                currentPage = pagedList.CurrentPage,
-                totalPages = pagedList.TotalPages,
-                pageSize = pagedList.PageSize,
                 totalCount = pagedList.TotalCount,
+                totalPages = pagedList.TotalPages,
+                currentPage = pagedList.CurrentPage,
+                pageSize = pagedList.PageSize,
                 previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
