@@ -59,14 +59,14 @@ namespace Todo.Controllers
                 if (parameters.OrderBy.Equals("tags", InvariantCultureIgnoreCase))
                     queryable = queryable.OrderBy(t => t.Project).ThenBy(t => t.Context);
 
-            var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageNumber, parameters.PageSize);
+            var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageSize, parameters.PageNumber);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
             {
                 totalCount = pagedList.TotalCount,
+                pageSize = pagedList.PageSize,
                 totalPages = pagedList.TotalPages,
                 currentPage = pagedList.CurrentPage,
-                pageSize = pagedList.PageSize,
                 previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
@@ -220,22 +220,22 @@ namespace Todo.Controllers
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
-                pageNumber = parameters.PageNumber - 1,
-                pageSize = parameters.PageSize
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber - 1
             }),
             NextPage => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
-                pageNumber = parameters.PageNumber + 1,
-                pageSize = parameters.PageSize
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber + 1
             }),
             _ => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
-                pageNumber = parameters.PageNumber,
-                pageSize = parameters.PageSize
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber
             })
         };
     }
