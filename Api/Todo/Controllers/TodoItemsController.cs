@@ -12,10 +12,10 @@ using Todo.Entities;
 using Todo.Helpers;
 using Todo.Models;
 using Todo.Parameters;
+using Todo.Services;
 using static System.Boolean;
 using static System.DateTime;
 using static System.String;
-using static System.StringComparison;
 using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
@@ -25,8 +25,13 @@ namespace Todo.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly IPropertyMappingService _service;
 
-        public TodoItemsController(TodoContext context) => _context = context;
+        public TodoItemsController(TodoContext context, IPropertyMappingService service)
+        {
+            _context = context;
+            _service = service;
+        }
 
         [HttpOptions]
         public IActionResult GetTodoItemsOptions()
@@ -55,9 +60,7 @@ namespace Todo.Controllers
                     t.Context.Contains(parameters.SearchQuery.Trim()) ||
                     t.Project.Contains(parameters.SearchQuery.Trim()));
 
-            if (!IsNullOrWhiteSpace(parameters.OrderBy))
-                if (parameters.OrderBy.Equals("tags", InvariantCultureIgnoreCase))
-                    queryable = queryable.OrderBy(t => t.Project).ThenBy(t => t.Context);
+            queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
             var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageSize, parameters.PageNumber);
 
