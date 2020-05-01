@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Todo.Contexts;
+using Todo.Services;
 
 namespace Todo
 {
@@ -23,6 +24,8 @@ namespace Todo
                 .AddControllers(options => options.ReturnHttpNotAcceptable = true)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
                 .AddXmlDataContractSerializerFormatters();
+
+            _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
