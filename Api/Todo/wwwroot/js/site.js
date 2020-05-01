@@ -12,12 +12,14 @@ function addItem() {
     const addNameTextbox = document.getElementById("add-name");
     const addProjectTextbox = document.getElementById("add-project");
     const addContextTextbox = document.getElementById("add-context");
+    const addDateTextbox = document.getElementById("add-date");
 
     const item = {
         isComplete: false,
         name: addNameTextbox.value.trim(),
         project: addProjectTextbox.value.trim(),
-        context: addContextTextbox.value.trim()
+        context: addContextTextbox.value.trim(),
+        date: addDateTextbox.value.trim()
     };
 
     fetch(uri, {
@@ -34,6 +36,7 @@ function addItem() {
             addNameTextbox.value = "";
             addProjectTextbox.value = "";
             addContextTextbox.value = "";
+            addDateTextbox.value = "";
         })
         .catch(error => console.error("Unable to add item.", error));
 }
@@ -48,10 +51,14 @@ function deleteItem(id) {
 
 function displayEditForm(id) {
     const item = todos.find(t => t.id === id);
+    const date = new Date();
+
+    date.setDate(date.getDate() - item.age);
 
     document.getElementById("edit-name").value = item.name;
     document.getElementById("edit-project").value = item.tags.split("|")[0];
     document.getElementById("edit-context").value = item.tags.split("|")[1];
+    document.getElementById("edit-date").value = date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, 0) + "-" + date.getDate().toString().padStart(2, 0);
     document.getElementById("edit-id").value = item.id;
     document.getElementById("edit-isComplete").checked = item.isComplete;
     document.getElementById("editForm").style.display = "block";
@@ -64,7 +71,8 @@ function updateItem() {
         isComplete: document.getElementById("edit-isComplete").checked,
         name: document.getElementById("edit-name").value.trim(),
         project: document.getElementById("edit-project").value.trim(),
-        context: document.getElementById("edit-context").value.trim()
+        context: document.getElementById("edit-context").value.trim(),
+        date: document.getElementById("edit-date").value.trim()
     };
 
     fetch(`${uri}/${itemId}`, {
@@ -125,14 +133,18 @@ function _displayItems(data) {
         td2.appendChild(nameNode);
 
         const td3 = tr.insertCell(2);
-        const contextNode = document.createTextNode(item.tags);
-        td3.appendChild(contextNode);
+        const tagsNode = document.createTextNode(item.tags);
+        td3.appendChild(tagsNode);
 
         const td4 = tr.insertCell(3);
-        td4.appendChild(editButton);
+        const ageNode = document.createTextNode(item.age);
+        td4.appendChild(ageNode);
 
         const td5 = tr.insertCell(4);
-        td5.appendChild(deleteButton);
+        td5.appendChild(editButton);
+
+        const td6 = tr.insertCell(5);
+        td6.appendChild(deleteButton);
     });
 
     todos = data;
