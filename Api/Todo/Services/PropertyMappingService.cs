@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Todo.Entities;
 using Todo.Models;
@@ -22,14 +21,6 @@ namespace Todo.Services
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
-        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>()
-        {
-            var mapping = _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>().ToList();
-
-            if (mapping.Count == 1)
-                return mapping.First().MappingDictionary;
-
-            throw new Exception($"Cannot find exact property mapping instance for <{typeof(TSource)},{typeof(TDestination)}");
-        }
+        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
     }
 }
