@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using Todo.Services;
@@ -10,7 +9,7 @@ namespace Todo.Helpers
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> dictionary)
+        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> propertyMapping)
         {
             if (IsNullOrWhiteSpace(orderBy))
                 return source;
@@ -25,12 +24,9 @@ namespace Todo.Helpers
                 int index = trimmed.IndexOf(" ", OrdinalIgnoreCase);
                 string propertyName = index == -1 ? trimmed : trimmed.Remove(index);
 
-                if (!dictionary.ContainsKey(propertyName))
-                    throw new ArgumentException($"Key mapping for {propertyName} does not exist.");
-
-                foreach (string property in dictionary[propertyName].DestinationProperties)
+                foreach (string property in propertyMapping[propertyName].DestinationProperties)
                 {
-                    descending = dictionary[propertyName].Revert ? !descending : descending;
+                    descending = propertyMapping[propertyName].Revert ? !descending : descending;
                     orderByString += Concat(IsNullOrWhiteSpace(orderByString) ? Empty : ", ", property, descending ? " descending" : " ascending");
                 }
             }
