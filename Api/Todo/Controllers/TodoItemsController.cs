@@ -224,21 +224,24 @@ namespace Todo.Controllers
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
                 pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber - 1
+                pageNumber = parameters.PageNumber - 1,
+                orderBy = parameters.OrderBy
             }),
             NextPage => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
                 pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber + 1
+                pageNumber = parameters.PageNumber + 1,
+                orderBy = parameters.OrderBy
             }),
             _ => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
                 pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber
+                pageNumber = parameters.PageNumber,
+                orderBy = parameters.OrderBy
             })
         };
     }
