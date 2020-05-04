@@ -1,13 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Todo.Contexts;
+using Todo.Entities;
+using Todo.Helpers;
 using Todo.Models;
+using Todo.Parameters;
+using Todo.Services;
 using static System.Boolean;
+using static System.DateTime;
 using static System.String;
+using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
 {
@@ -16,8 +25,13 @@ namespace Todo.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly IPropertyMappingService _service;
 
-        public TodoItemsController(TodoContext context) => _context = context;
+        public TodoItemsController(TodoContext context, IPropertyMappingService service)
+        {
+            _context = context;
+            _service = service;
+        }
 
         [HttpOptions]
         public IActionResult GetTodoItemsOptions()
@@ -27,26 +41,46 @@ namespace Todo.Controllers
         }
 
         [HttpHead]
-        [HttpGet]
+        [HttpGet(Name = "GetTodoItems")]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
-            IEnumerable<TodoItemDto> query = _context.TodoItems.Select(t => ItemToDto(t)).AsEnumerable();
+            if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
+                return BadRequest();
 
-            if (!IsNullOrWhiteSpace(parameters?.IsComplete))
+            IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
+
+            if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
                 if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
                     return BadRequest();
 
-                query = query.Where(t => t.IsComplete == flag);
+                queryable = queryable.Where(t => t.IsComplete == flag);
             }
 
-            if (!IsNullOrWhiteSpace(parameters?.SearchQuery))
-                query = query.Where(t => t.Name.Contains(parameters.SearchQuery.Trim()) || t.Tags.Contains(parameters.SearchQuery.Trim()));
+            if (!IsNullOrWhiteSpace(parameters.SearchQuery))
+                queryable = queryable.Where(t =>
+                    t.Name.Contains(parameters.SearchQuery.Trim()) ||
+                    t.Context.Contains(parameters.SearchQuery.Trim()) ||
+                    t.Project.Contains(parameters.SearchQuery.Trim()));
 
-            return query.ToList();
+            queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
+
+            var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageSize, parameters.PageNumber);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
+            {
+                totalCount = pagedList.TotalCount,
+                pageSize = pagedList.PageSize,
+                totalPages = pagedList.TotalPages,
+                currentPage = pagedList.CurrentPage,
+                previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
+                nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
+            }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
+
+            return pagedList.Select(ItemToDto).ToList();
         }
 
-        [HttpGet("{id}", Name = "GetTodoItems")]
+        [HttpGet("{id}", Name = "GetTodoItem")]
         public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -60,11 +94,11 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItem>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
+        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -75,7 +109,7 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+                return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
             }
 
             DtoToItem(dto, todoItem);
@@ -93,7 +127,7 @@ namespace Todo.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<TodoItem>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             var dto = new TodoItemUpdateDto();
@@ -134,7 +168,7 @@ namespace Todo.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> DeleteTodoItemAsync(Guid id)
+        public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -154,6 +188,7 @@ namespace Todo.Controllers
             Id = todoItem.Id,
             Name = todoItem.Name,
             Tags = $"{todoItem.Project}|{todoItem.Context}",
+            Age = (Today - todoItem.Date).Days,
             IsComplete = todoItem.IsComplete
         };
 
@@ -162,6 +197,7 @@ namespace Todo.Controllers
             Name = todoItem.Name,
             Project = todoItem.Project,
             Context = todoItem.Context,
+            Date = todoItem.Date,
             IsComplete = todoItem.IsComplete
         };
 
@@ -170,16 +206,46 @@ namespace Todo.Controllers
             Name = dto.Name,
             Project = dto.Project,
             Context = dto.Context,
+            Date = dto.Date,
             IsComplete = dto.IsComplete,
             Secret = "Shhh!"
         };
 
-        public static void DtoToItem(TodoItemUpdateDto dto, TodoItem todoItem)
+        private static void DtoToItem(TodoItemManipulationDto dto, TodoItem todoItem)
         {
             todoItem.Name = dto.Name;
             todoItem.Project = dto.Project;
             todoItem.Context = dto.Context;
+            todoItem.Date = dto.Date;
             todoItem.IsComplete = dto.IsComplete;
         }
+
+        private string CreateTodoItemsUri(TodoItemParameters parameters, ResourceUriType type) => type switch
+        {
+            PreviousPage => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber - 1,
+                orderBy = parameters.OrderBy
+            }),
+            NextPage => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber + 1,
+                orderBy = parameters.OrderBy
+            }),
+            _ => Url.Link("GetTodoItems", new
+            {
+                isComplete = parameters.IsComplete,
+                searchQuery = parameters.SearchQuery,
+                pageSize = parameters.PageSize,
+                pageNumber = parameters.PageNumber,
+                orderBy = parameters.OrderBy
+            })
+        };
     }
 }

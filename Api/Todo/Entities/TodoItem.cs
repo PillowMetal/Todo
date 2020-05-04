@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Todo.Models
+namespace Todo.Entities
 {
     public class TodoItem
     {
@@ -12,6 +12,7 @@ namespace Todo.Models
 
         public string Project { get; set; }
         public string Context { get; set; }
+        public DateTime Date { get; set; }
         public bool IsComplete { get; set; }
         public string Secret { get; set; }
     }
