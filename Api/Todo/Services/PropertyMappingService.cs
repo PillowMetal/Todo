@@ -31,15 +31,15 @@ namespace Todo.Services
                 return true;
 
             Dictionary<string, PropertyMappingValue> propertyMapping = GetPropertyMapping<TSource, TDestination>();
-            string[] split = fields.Split(',');
 
-            return (
-                from field in split
+            return
+            (
+                from field in fields.Split(',')
                 select field.Trim()
                 into trimmed
                 let index = trimmed.IndexOf(" ", OrdinalIgnoreCase)
-                select index == -1 ? trimmed : trimmed.Remove(index)).All(propertyName => propertyMapping.ContainsKey(propertyName)
-            );
+                select index == -1 ? trimmed : trimmed.Remove(index)
+            ).All(propertyName => propertyMapping.ContainsKey(propertyName));
         }
     }
 }
