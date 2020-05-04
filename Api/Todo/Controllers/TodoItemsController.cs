@@ -44,6 +44,9 @@ namespace Todo.Controllers
         [HttpGet(Name = "GetTodoItems")]
         public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
+            if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
+                return BadRequest();
+
             IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
