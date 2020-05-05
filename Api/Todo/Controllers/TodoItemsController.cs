@@ -78,14 +78,14 @@ namespace Todo.Controllers
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
-            return new JsonResult(pagedList.Select(ItemToDto).ShapeData(parameters.Fields));
+            return Ok(pagedList.Select(ItemToDto).ShapeData(parameters.Fields));
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
-        public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(Guid id)
+        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
-            return todoItem == null ? (ActionResult<TodoItemDto>)NotFound() : ItemToDto(todoItem);
+            return todoItem == null ? (ActionResult<ExpandoObject>)NotFound() : ItemToDto(todoItem).ShapeData(fields);
         }
 
         [HttpPost]
