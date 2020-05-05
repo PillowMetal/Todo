@@ -1,7 +1,6 @@
-﻿#nullable enable
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using static System.String;
 
@@ -16,15 +15,8 @@ namespace Todo.Helpers
             if (IsNullOrWhiteSpace(fields))
                 propertyInfos.AddRange(typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
             else
-                foreach (string field in fields.Split(','))
-                {
-                    PropertyInfo? propertyInfo = typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-                    if (propertyInfo == null)
-                        throw new Exception($"Property {field.Trim()} wasn't found on {typeof(T)}");
-
-                    propertyInfos.Add(propertyInfo);
-                }
+                propertyInfos.AddRange(fields.Split(',').Select(field =>
+                    typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)));
 
             var expandoObjects = new List<ExpandoObject>();
 

@@ -1,7 +1,7 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using static System.String;
 
@@ -17,15 +17,9 @@ namespace Todo.Helpers
                 foreach (PropertyInfo propertyInfo in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
                     _ = dataShapedObject.TryAdd(propertyInfo.Name, propertyInfo.GetValue(source));
             else
-                foreach (string field in fields.Split(','))
-                {
-                    PropertyInfo? propertyInfo = typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-                    if (propertyInfo == null)
-                        throw new Exception($"Property {field.Trim()} wasn't found on {typeof(T)}");
-
-                    _ = dataShapedObject.TryAdd(propertyInfo.Name, propertyInfo.GetValue(source));
-                }
+                foreach (PropertyInfo? propertyInfo in fields.Split(',').Select(field =>
+                    typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)))
+                    _ = dataShapedObject.TryAdd(propertyInfo?.Name ?? Empty, propertyInfo?.GetValue(source));
 
             return dataShapedObject;
         }
