@@ -11,10 +11,10 @@ namespace Todo.Helpers
     {
         public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields)
         {
-            var propertyInfoList = new List<PropertyInfo>();
+            var propertyInfos = new List<PropertyInfo>();
 
             if (IsNullOrWhiteSpace(fields))
-                propertyInfoList.AddRange(typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                propertyInfos.AddRange(typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
             else
                 foreach (string field in fields.Split(','))
                 {
@@ -23,22 +23,22 @@ namespace Todo.Helpers
                     if (propertyInfo == null)
                         throw new Exception($"Property {field.Trim()} wasn't found on {typeof(T)}");
 
-                    propertyInfoList.Add(propertyInfo);
+                    propertyInfos.Add(propertyInfo);
                 }
 
-            var expandoObjectList = new List<ExpandoObject>();
+            var expandoObjects = new List<ExpandoObject>();
 
             foreach (T sourceObject in source)
             {
                 var dataShapedObject = new ExpandoObject();
 
-                foreach (PropertyInfo propertyInfo in propertyInfoList)
+                foreach (PropertyInfo propertyInfo in propertyInfos)
                     _ = dataShapedObject.TryAdd(propertyInfo.Name, propertyInfo.GetValue(sourceObject));
 
-                expandoObjectList.Add(dataShapedObject);
+                expandoObjects.Add(dataShapedObject);
             }
 
-            return expandoObjectList;
+            return expandoObjects;
         }
     }
 }
