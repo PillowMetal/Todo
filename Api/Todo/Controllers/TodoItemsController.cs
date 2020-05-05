@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -42,9 +43,12 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet(Name = "GetTodoItems")]
-        public ActionResult<IEnumerable<TodoItemDto>> GetTodoItems([FromQuery] TodoItemParameters parameters)
+        public ActionResult<IEnumerable<ExpandoObject>> GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
+                return BadRequest();
+
+            if (!_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
 
             IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
@@ -77,14 +81,17 @@ namespace Todo.Controllers
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
-            return pagedList.Select(ItemToDto).ToList();
+            return Ok(pagedList.Select(ItemToDto).ShapeData(parameters.Fields));
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
-        public async Task<ActionResult<TodoItemDto>> GetTodoItemAsync(Guid id)
+        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields)
         {
+            if (!_service.HasProperties<TodoItemDto>(fields))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
-            return todoItem == null ? (ActionResult<TodoItemDto>)NotFound() : ItemToDto(todoItem);
+            return todoItem == null ? (ActionResult<ExpandoObject>)NotFound() : ItemToDto(todoItem).ShapeData(fields);
         }
 
         [HttpPost]
@@ -226,25 +233,28 @@ namespace Todo.Controllers
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
+                orderBy = parameters.OrderBy,
                 pageSize = parameters.PageSize,
                 pageNumber = parameters.PageNumber - 1,
-                orderBy = parameters.OrderBy
+                fields = parameters.Fields
             }),
             NextPage => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
+                orderBy = parameters.OrderBy,
                 pageSize = parameters.PageSize,
                 pageNumber = parameters.PageNumber + 1,
-                orderBy = parameters.OrderBy
+                fields = parameters.Fields
             }),
             _ => Url.Link("GetTodoItems", new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
+                orderBy = parameters.OrderBy,
                 pageSize = parameters.PageSize,
                 pageNumber = parameters.PageNumber,
-                orderBy = parameters.OrderBy
+                fields = parameters.Fields
             })
         };
     }

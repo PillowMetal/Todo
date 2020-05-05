@@ -15,9 +15,8 @@ namespace Todo.Helpers
                 return source;
 
             string orderByString = Empty;
-            string[] split = orderBy.Split(',');
 
-            foreach (string clause in split)
+            foreach (string clause in orderBy.Split(','))
             {
                 string trimmed = clause.Trim();
                 bool descending = trimmed.EndsWith(" desc", OrdinalIgnoreCase);
