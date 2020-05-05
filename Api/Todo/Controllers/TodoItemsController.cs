@@ -48,6 +48,9 @@ namespace Todo.Controllers
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
 
+            if (!_service.HasProperties<TodoItemDto>(parameters.Fields))
+                return BadRequest();
+
             IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
@@ -84,6 +87,9 @@ namespace Todo.Controllers
         [HttpGet("{id}", Name = "GetTodoItem")]
         public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields)
         {
+            if (!_service.HasProperties<TodoItemDto>(fields))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             return todoItem == null ? (ActionResult<ExpandoObject>)NotFound() : ItemToDto(todoItem).ShapeData(fields);
         }
