@@ -91,7 +91,14 @@ namespace Todo.Controllers
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
-            return todoItem == null ? (ActionResult<ExpandoObject>)NotFound() : ItemToDto(todoItem).ShapeData(fields);
+
+            if (todoItem == null)
+                return NotFound();
+
+            ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData(fields);
+            _ = expandoObject.TryAdd("links", CreateLinks(id, fields));
+
+            return expandoObject;
         }
 
         [HttpPost]
@@ -174,7 +181,7 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteTodoItem")]
         public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -256,6 +263,14 @@ namespace Todo.Controllers
                 pageNumber = parameters.PageNumber,
                 fields = parameters.Fields
             })
+        };
+
+        public IEnumerable<LinkDto> CreateLinks(Guid id, string fields) => new List<LinkDto>
+        {
+            IsNullOrWhiteSpace(fields) ?
+                new LinkDto(Url.Link("GetTodoItem", new { id }), "self", "GET") :
+                new LinkDto(Url.Link("GetTodoItem", new { id, fields }), "self", "GET"),
+            new LinkDto(Url.Link("DeleteTodoItem", new { id }), "delete-todoitem", "DELETE")
         };
     }
 }
