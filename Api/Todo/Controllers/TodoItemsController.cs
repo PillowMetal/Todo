@@ -76,9 +76,7 @@ namespace Todo.Controllers
                 totalCount = pagedList.TotalCount,
                 pageSize = pagedList.PageSize,
                 totalPages = pagedList.TotalPages,
-                currentPage = pagedList.CurrentPage,
-                previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
-                nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
+                currentPage = pagedList.CurrentPage
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
             IEnumerable<ExpandoObject> expandoObjects = pagedList.Select(ItemToDto).ShapeData(parameters.Fields).Select(expandoObject =>
@@ -90,7 +88,7 @@ namespace Todo.Controllers
             return Ok(new
             {
                 value = expandoObjects,
-                links = CreateLinks(parameters)
+                links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext)
             });
         }
 
@@ -286,9 +284,17 @@ namespace Todo.Controllers
             new LinkDto(Url.Link("DeleteTodoItem", new { id }), "delete-todoitem", "DELETE")
         };
 
-        public IEnumerable<LinkDto> CreateLinks(TodoItemParameters parameters) => new List<LinkDto>
+        public IEnumerable<LinkDto> CreateLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
-            new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET")
-        };
+            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
+
+            if (hasPrevious)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", "GET"));
+
+            if (hasNext)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", "GET"));
+
+            return linkDtos;
+        }
     }
 }
