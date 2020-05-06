@@ -37,7 +37,7 @@ namespace Todo.Controllers
         [HttpOptions]
         public IActionResult GetTodoItemsOptions()
         {
-            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,DELETE");
+            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE");
             return Ok();
         }
 
@@ -109,7 +109,7 @@ namespace Todo.Controllers
             return expandoObject;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "PostTodoItem")]
         public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemCreateDto dto)
         {
             TodoItem todoItem = DtoToItem(dto);
