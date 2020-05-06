@@ -9,7 +9,7 @@ namespace Todo.Helpers
 {
     public static class ObjectExtenstions
     {
-        public static ExpandoObject ShapeData<T>(this T source, string fields)
+        public static ExpandoObject ShapeData<T>(this T source, string? fields = null)
         {
             var dataShapedObject = new ExpandoObject();
 

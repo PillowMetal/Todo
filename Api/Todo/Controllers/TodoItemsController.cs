@@ -108,7 +108,10 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+            ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+            _ = expandoObject.TryAdd("links", CreateLinks(todoItem.Id));
+
+            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, expandoObject);
         }
 
         [HttpPut("{id}")]
@@ -265,7 +268,7 @@ namespace Todo.Controllers
             })
         };
 
-        public IEnumerable<LinkDto> CreateLinks(Guid id, string fields) => new List<LinkDto>
+        public IEnumerable<LinkDto> CreateLinks(Guid id, string fields = null) => new List<LinkDto>
         {
             IsNullOrWhiteSpace(fields) ?
                 new LinkDto(Url.Link("GetTodoItem", new { id }), "self", "GET") :
