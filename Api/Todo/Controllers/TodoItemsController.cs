@@ -43,7 +43,7 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet(Name = "GetTodoItems")]
-        public ActionResult<IEnumerable<ExpandoObject>> GetTodoItems([FromQuery] TodoItemParameters parameters)
+        public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters)
         {
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
@@ -81,7 +81,17 @@ namespace Todo.Controllers
                 nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
-            return Ok(pagedList.Select(ItemToDto).ShapeData(parameters.Fields));
+            IEnumerable<ExpandoObject> expandoObjects = pagedList.Select(ItemToDto).ShapeData(parameters.Fields).Select(expandoObject =>
+            {
+                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
+                return expandoObject;
+            });
+
+            return Ok(new
+            {
+                value = expandoObjects,
+                links = CreateLinks(parameters)
+            });
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
@@ -96,7 +106,7 @@ namespace Todo.Controllers
                 return NotFound();
 
             ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData(fields);
-            _ = expandoObject.TryAdd("links", CreateLinks(id, fields));
+            _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"], fields));
 
             return expandoObject;
         }
@@ -109,9 +119,9 @@ namespace Todo.Controllers
             _ = await _context.SaveChangesAsync();
 
             ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
-            _ = expandoObject.TryAdd("links", CreateLinks(todoItem.Id));
+            _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
 
-            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, expandoObject);
+            return CreatedAtRoute("GetTodoItem", new { id = ((IDictionary<string, object>)expandoObject)["Id"] }, expandoObject);
         }
 
         [HttpPut("{id}")]
@@ -274,6 +284,11 @@ namespace Todo.Controllers
                 new LinkDto(Url.Link("GetTodoItem", new { id }), "self", "GET") :
                 new LinkDto(Url.Link("GetTodoItem", new { id, fields }), "self", "GET"),
             new LinkDto(Url.Link("DeleteTodoItem", new { id }), "delete-todoitem", "DELETE")
+        };
+
+        public IEnumerable<LinkDto> CreateLinks(TodoItemParameters parameters) => new List<LinkDto>
+        {
+            new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET")
         };
     }
 }
