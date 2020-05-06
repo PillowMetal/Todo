@@ -33,14 +33,11 @@ namespace Todo.Services
 
             Dictionary<string, PropertyMappingValue> propertyMapping = GetPropertyMapping<TSource, TDestination>();
 
-            return
-            (
-                from clause in orderBy.Split(',')
-                select clause.Trim()
-                into trimmed
-                let index = trimmed.IndexOf(" ", OrdinalIgnoreCase)
-                select index == -1 ? trimmed : trimmed.Remove(index)
-            ).All(propertyName => propertyMapping.ContainsKey(propertyName));
+            return orderBy.Split(',')
+                .Select(clause => clause.Trim())
+                .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", OrdinalIgnoreCase) })
+                .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
+                .All(propertyName => propertyMapping.ContainsKey(propertyName));
         }
 
         public bool HasProperties<T>(string fields) =>
