@@ -23,6 +23,6 @@ namespace Todo.Helpers
         }
 
         public static PagedList<T> Create(IQueryable<T> source, int pageSize, int pageNumber) =>
-            new PagedList<T>(source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(), source.Count(), pageSize, pageNumber);
+            new PagedList<T>(source.Skip((pageNumber - 1) * pageSize).Take(pageSize), source.Count(), pageSize, pageNumber);
     }
 }
