@@ -1,5 +1,8 @@
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +27,10 @@ namespace Todo
                 .AddControllers(options => options.ReturnHttpNotAcceptable = true)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
                 .AddXmlDataContractSerializerFormatters();
+
+            _ = services.Configure<MvcOptions>(options => options
+                .OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().First()
+                .SupportedMediaTypes.Add("application/vnd.usbe.hateoas+json"));
 
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
