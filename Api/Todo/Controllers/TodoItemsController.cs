@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using Todo.Contexts;
 using Todo.Entities;
 using Todo.Helpers;
@@ -93,8 +94,11 @@ namespace Todo.Controllers
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
-        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields)
+        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             if (!_service.HasProperties<TodoItemDto>(fields))
                 return BadRequest();
 
@@ -104,7 +108,9 @@ namespace Todo.Controllers
                 return NotFound();
 
             ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData(fields);
-            _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"], fields));
+
+            if (headerValue.MediaType == "application/vnd.usbe.hateoas+json")
+                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"], fields));
 
             return expandoObject;
         }
