@@ -36,10 +36,10 @@ namespace Todo.Controllers
             _service = service;
         }
 
-        [HttpOptions]
+        [HttpOptions(Name = "OptionsTodoItems")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public IActionResult GetTodoItemsOptions()
+        public IActionResult OptionsTodoItems()
         {
             Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE");
             return Ok();
@@ -141,7 +141,7 @@ namespace Todo.Controllers
             return CreatedAtRoute("GetTodoItem", new { id = ((IDictionary<string, object>)expandoObject)["Id"] }, expandoObject);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "PutTodoItem")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -174,7 +174,7 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}", Name = "PatchTodoItem")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -311,6 +311,8 @@ namespace Todo.Controllers
             IsNullOrWhiteSpace(fields) ?
                 new LinkDto(Url.Link("GetTodoItem", new { id }), "self", "GET") :
                 new LinkDto(Url.Link("GetTodoItem", new { id, fields }), "self", "GET"),
+            new LinkDto(Url.Link("PutTodoItem", new { id }), "put-todoitem", "PUT"),
+            new LinkDto(Url.Link("PatchTodoItem", new { id }), "patch-todoitem", "PATCH"),
             new LinkDto(Url.Link("DeleteTodoItem", new { id }), "delete-todoitem", "DELETE")
         };
 
