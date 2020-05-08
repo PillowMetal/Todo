@@ -5,7 +5,6 @@ using System.Reflection;
 using Todo.Entities;
 using Todo.Models;
 using static System.String;
-using static System.StringComparison;
 
 namespace Todo.Services
 {
@@ -24,7 +23,8 @@ namespace Todo.Services
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
-        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
+        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() =>
+            _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy)
         {
@@ -35,7 +35,7 @@ namespace Todo.Services
 
             return orderBy.Split(',')
                 .Select(clause => clause.Trim())
-                .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", OrdinalIgnoreCase) })
+                .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.OrdinalIgnoreCase) })
                 .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
                 .All(propertyName => propertyMapping.ContainsKey(propertyName));
         }
