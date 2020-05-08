@@ -8,14 +8,14 @@ namespace Todo.Controllers
     [ApiController]
     public class RootController : ControllerBase
     {
-        [HttpGet(Name = "GetRoot")]
+        [HttpGet(Name = nameof(GetRoot))]
         public ActionResult<IEnumerable<LinkDto>> GetRoot() => new List<LinkDto>
         {
-            new LinkDto(Url.Link("GetRoot", new { }), "self", "GET"),
+            new LinkDto(Url.Link(nameof(GetRoot), new { }), "self", "GET"),
             new LinkDto(Url.Link("OptionsTodoItems", new { }), "options-todoitems", "OPTIONS"),
             new LinkDto(Url.Link("GetTodoItems", new { }), "head-todoitem", "HEAD"),
             new LinkDto(Url.Link("GetTodoItems", new { }), "get-todoitems", "GET"),
-            new LinkDto(Url.Link("PostTodoItem", new { }), "post-todoitem", "POST")
+            new LinkDto(Url.Link("PostTodoItemAsync", new { }), "post-todoitem", "POST")
         };
     }
 }
