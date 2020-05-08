@@ -136,14 +136,19 @@ namespace Todo.Controllers
         [HttpPost(Name = "PostTodoItem")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto)
+        public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = DtoToItem(dto);
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
             ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
-            _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
+
+            if (headerValue.MediaType == "application/vnd.usbe.hateoas+json")
+                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
 
             return CreatedAtRoute("GetTodoItem", new { id = ((IDictionary<string, object>)expandoObject)["Id"] }, expandoObject);
         }
@@ -153,8 +158,11 @@ namespace Todo.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
+        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
@@ -164,7 +172,12 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+                ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+
+                if (headerValue.MediaType == "application/vnd.usbe.hateoas+json")
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
+
+                return CreatedAtRoute("GetTodoItem", new { id = ((IDictionary<string, object>)expandoObject)["Id"] }, expandoObject);
             }
 
             DtoToItem(dto, todoItem);
@@ -186,8 +199,11 @@ namespace Todo.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             var dto = new TodoItemUpdateDto();
 
@@ -203,7 +219,12 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+                ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+
+                if (headerValue.MediaType == "application/vnd.usbe.hateoas+json")
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
+
+                return CreatedAtRoute("GetTodoItem", new { id = ((IDictionary<string, object>)expandoObject)["Id"] }, expandoObject);
             }
 
             dto = ItemToUpdateDto(todoItem);
