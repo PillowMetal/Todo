@@ -50,8 +50,11 @@ namespace Todo.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters)
+        public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
 
@@ -86,17 +89,21 @@ namespace Todo.Controllers
                 currentPage = pagedList.CurrentPage
             }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
 
-            IEnumerable<ExpandoObject> expandoObjects = pagedList.Select(ItemToDto).ShapeData(parameters.Fields).Select(expandoObject =>
-            {
-                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"]));
-                return expandoObject;
-            });
+            IEnumerable<ExpandoObject> expandoObjects = pagedList.Select(ItemToDto).ShapeData(parameters.Fields).ToList();
 
-            return Ok(new
+            if (headerValue.MediaType == "application/vnd.usbe.hateoas+json")
             {
-                value = expandoObjects,
-                links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext)
-            });
+                foreach (ExpandoObject expandoObject in expandoObjects)
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["Id"], parameters.Fields));
+
+                return Ok(new
+                {
+                    value = expandoObjects,
+                    links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext)
+                });
+            }
+
+            return Ok(expandoObjects);
         }
 
         [HttpGet("{id}", Name = "GetTodoItem")]
@@ -246,6 +253,16 @@ namespace Todo.Controllers
             Age = (Today - todoItem.Date).Days,
             IsComplete = todoItem.IsComplete
         };
+
+        //private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new TodoItemFullDto
+        //{
+        //    Id = todoItem.Id,
+        //    Name = todoItem.Name,
+        //    Project = todoItem.Project,
+        //    Context = todoItem.Context,
+        //    Date = todoItem.Date,
+        //    IsComplete = todoItem.IsComplete
+        //};
 
         private static TodoItemUpdateDto ItemToUpdateDto(TodoItem todoItem) => new TodoItemUpdateDto
         {
