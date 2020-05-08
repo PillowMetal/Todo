@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,8 @@ namespace Todo
                         .AddLogging().AddControllers().AddNewtonsoftJson().Services.BuildServiceProvider()
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
-                .AddXmlDataContractSerializerFormatters();
+                .AddXmlDataContractSerializerFormatters()
+                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve);
 
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
