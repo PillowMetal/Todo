@@ -25,7 +25,7 @@ namespace Todo.Helpers
                 var dataShapedObject = new ExpandoObject();
 
                 foreach (PropertyInfo propertyInfo in propertyInfos)
-                    _ = dataShapedObject.TryAdd(propertyInfo.Name, propertyInfo.GetValue(sourceObject));
+                    _ = dataShapedObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(sourceObject));
 
                 expandoObjects.Add(dataShapedObject);
             }
