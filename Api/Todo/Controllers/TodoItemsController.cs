@@ -118,7 +118,9 @@ namespace Todo.Controllers
         }
 
         [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
-        //[Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json")]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -128,7 +130,7 @@ namespace Todo.Controllers
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
 
-            if (!_service.HasProperties<TodoItemDto>(fields))
+            if (!_service.HasProperties<TodoItemDto>(fields) && !_service.HasProperties<TodoItemFullDto>(fields))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -136,9 +138,11 @@ namespace Todo.Controllers
             if (todoItem == null)
                 return NotFound();
 
-            ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData(fields);
+            ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                ItemToFullDto(todoItem).ShapeData(fields) :
+                ItemToDto(todoItem).ShapeData(fields);
 
-            if (headerValue.MediaType.Equals("application/vnd.usbe.hateoas+json", OrdinalIgnoreCase))
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                 _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
 
             return expandoObject;
@@ -286,15 +290,15 @@ namespace Todo.Controllers
             IsComplete = todoItem.IsComplete
         };
 
-        //private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new TodoItemFullDto
-        //{
-        //    Id = todoItem.Id,
-        //    Name = todoItem.Name,
-        //    Project = todoItem.Project,
-        //    Context = todoItem.Context,
-        //    Date = todoItem.Date,
-        //    IsComplete = todoItem.IsComplete
-        //};
+        private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new TodoItemFullDto
+        {
+            Id = todoItem.Id,
+            Name = todoItem.Name,
+            Project = todoItem.Project,
+            Context = todoItem.Context,
+            Date = todoItem.Date,
+            IsComplete = todoItem.IsComplete
+        };
 
         private static TodoItemUpdateDto ItemToUpdateDto(TodoItem todoItem) => new TodoItemUpdateDto
         {
