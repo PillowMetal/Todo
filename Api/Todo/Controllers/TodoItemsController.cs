@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -58,7 +57,10 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet(Name = nameof(GetTodoItems))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
         public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
@@ -69,7 +71,9 @@ namespace Todo.Controllers
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
 
-            if (!_service.HasProperties<TodoItemDto>(parameters.Fields))
+            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+
+            if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(parameters.Fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
 
             IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
@@ -98,20 +102,18 @@ namespace Todo.Controllers
                 pageSize = pagedList.PageSize,
                 totalPages = pagedList.TotalPages,
                 currentPage = pagedList.CurrentPage
-            }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
+            }));
 
-            IEnumerable<ExpandoObject> expandoObjects = pagedList.Select(ItemToDto).ShapeData(parameters.Fields).ToList();
+            IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
+                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields).ToList() :
+                pagedList.Select(ItemToDto).ShapeData(parameters.Fields).ToList();
 
-            if (headerValue.MediaType.Equals("application/vnd.usbe.hateoas+json", OrdinalIgnoreCase))
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
             {
                 foreach (ExpandoObject expandoObject in expandoObjects)
                     _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
 
-                return Ok(new
-                {
-                    value = expandoObjects,
-                    links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext)
-                });
+                return Ok(new { value = expandoObjects, links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
             }
 
             return Ok(expandoObjects);
@@ -130,7 +132,9 @@ namespace Todo.Controllers
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
 
-            if (!_service.HasProperties<TodoItemDto>(fields) && !_service.HasProperties<TodoItemFullDto>(fields))
+            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+
+            if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(fields))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -138,9 +142,7 @@ namespace Todo.Controllers
             if (todoItem == null)
                 return NotFound();
 
-            ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
-                ItemToFullDto(todoItem).ShapeData(fields) :
-                ItemToDto(todoItem).ShapeData(fields);
+            ExpandoObject expandoObject = isFullRequest ? ItemToFullDto(todoItem).ShapeData(fields) : ItemToDto(todoItem).ShapeData(fields);
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                 _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
