@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using Todo.Contexts;
 using Todo.Entities;
 using Todo.Helpers;
@@ -17,16 +18,26 @@ using Todo.Services;
 using static System.Boolean;
 using static System.DateTime;
 using static System.String;
+using static System.StringComparison;
 using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+        "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+        "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
     public class TodoItemsController : ControllerBase
     {
+        #region Fields
+
         private readonly TodoContext _context;
         private readonly IPropertyMappingService _service;
+
+        #endregion
+
+        #region Constructors
 
         public TodoItemsController(TodoContext context, IPropertyMappingService service)
         {
@@ -34,21 +45,35 @@ namespace Todo.Controllers
             _service = service;
         }
 
-        [HttpOptions]
-        public IActionResult GetTodoItemsOptions()
+        #endregion
+
+        #region Methods
+
+        [HttpOptions(Name = nameof(OptionsTodoItems))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public IActionResult OptionsTodoItems()
         {
-            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,DELETE");
+            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE");
             return Ok();
         }
 
         [HttpHead]
-        [HttpGet(Name = "GetTodoItems")]
-        public ActionResult<IEnumerable<ExpandoObject>> GetTodoItems([FromQuery] TodoItemParameters parameters)
+        [HttpGet(Name = nameof(GetTodoItems))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
 
-            if (!_service.HasProperties<TodoItemDto>(parameters.Fields))
+            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+
+            if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(parameters.Fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
 
             IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
@@ -63,9 +88,9 @@ namespace Todo.Controllers
 
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
                 queryable = queryable.Where(t =>
-                    t.Name.Contains(parameters.SearchQuery.Trim()) ||
-                    t.Context.Contains(parameters.SearchQuery.Trim()) ||
-                    t.Project.Contains(parameters.SearchQuery.Trim()));
+                    t.Name.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
+                    t.Context.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
+                    t.Project.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase));
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
@@ -76,37 +101,84 @@ namespace Todo.Controllers
                 totalCount = pagedList.TotalCount,
                 pageSize = pagedList.PageSize,
                 totalPages = pagedList.TotalPages,
-                currentPage = pagedList.CurrentPage,
-                previousPageLink = pagedList.HasPrevious ? CreateTodoItemsUri(parameters, PreviousPage) : null,
-                nextPageLink = pagedList.HasNext ? CreateTodoItemsUri(parameters, NextPage) : null
-            }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
+                currentPage = pagedList.CurrentPage
+            }));
 
-            return Ok(pagedList.Select(ItemToDto).ShapeData(parameters.Fields));
+            IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
+                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields).ToList() :
+                pagedList.Select(ItemToDto).ShapeData(parameters.Fields).ToList();
+
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+            {
+                foreach (ExpandoObject expandoObject in expandoObjects)
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
+
+                return Ok(new { value = expandoObjects, links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
+            }
+
+            return Ok(expandoObjects);
         }
 
-        [HttpGet("{id}", Name = "GetTodoItem")]
-        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields)
+        [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType)
         {
-            if (!_service.HasProperties<TodoItemDto>(fields))
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
+            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+
+            if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(fields))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
-            return todoItem == null ? (ActionResult<ExpandoObject>)NotFound() : ItemToDto(todoItem).ShapeData(fields);
+
+            if (todoItem == null)
+                return NotFound();
+
+            ExpandoObject expandoObject = isFullRequest ? ItemToFullDto(todoItem).ShapeData(fields) : ItemToDto(todoItem).ShapeData(fields);
+
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
+
+            return expandoObject;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TodoItemDto>> PostTodoItemAsync(TodoItemCreateDto dto)
+        [HttpPost(Name = nameof(PostTodoItemAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = DtoToItem(dto);
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+            ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                ItemToFullDto(todoItem).ShapeData() :
+                ItemToDto(todoItem).ShapeData();
+
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+
+            return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto)
+        [HttpPut("{id}", Name = nameof(PutTodoItemAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
             if (todoItem == null)
@@ -116,7 +188,14 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                    ItemToFullDto(todoItem).ShapeData() :
+                    ItemToDto(todoItem).ShapeData();
+
+                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+
+                return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
             }
 
             DtoToItem(dto, todoItem);
@@ -133,9 +212,16 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document)
+        [HttpPatch("{id}", Name = nameof(PatchTodoItemAsync))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType)
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+                return BadRequest();
+
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
             var dto = new TodoItemUpdateDto();
 
@@ -151,7 +237,14 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                return CreatedAtRoute("GetTodoItems", new { id = todoItem.Id }, ItemToDto(todoItem));
+                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                    ItemToFullDto(todoItem).ShapeData() :
+                    ItemToDto(todoItem).ShapeData();
+
+                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+
+                return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
             }
 
             dto = ItemToUpdateDto(todoItem);
@@ -174,7 +267,10 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = nameof(DeleteTodoItemAsync))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
@@ -196,6 +292,16 @@ namespace Todo.Controllers
             Name = todoItem.Name,
             Tags = $"{todoItem.Project}|{todoItem.Context}",
             Age = (Today - todoItem.Date).Days,
+            IsComplete = todoItem.IsComplete
+        };
+
+        private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new TodoItemFullDto
+        {
+            Id = todoItem.Id,
+            Name = todoItem.Name,
+            Project = todoItem.Project,
+            Context = todoItem.Context,
+            Date = todoItem.Date,
             IsComplete = todoItem.IsComplete
         };
 
@@ -229,7 +335,7 @@ namespace Todo.Controllers
 
         private string CreateTodoItemsUri(TodoItemParameters parameters, ResourceUriType type) => type switch
         {
-            PreviousPage => Url.Link("GetTodoItems", new
+            PreviousPage => Url.Link(nameof(GetTodoItems), new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
@@ -238,7 +344,7 @@ namespace Todo.Controllers
                 pageNumber = parameters.PageNumber - 1,
                 fields = parameters.Fields
             }),
-            NextPage => Url.Link("GetTodoItems", new
+            NextPage => Url.Link(nameof(GetTodoItems), new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
@@ -247,7 +353,7 @@ namespace Todo.Controllers
                 pageNumber = parameters.PageNumber + 1,
                 fields = parameters.Fields
             }),
-            _ => Url.Link("GetTodoItems", new
+            _ => Url.Link(nameof(GetTodoItems), new
             {
                 isComplete = parameters.IsComplete,
                 searchQuery = parameters.SearchQuery,
@@ -257,5 +363,30 @@ namespace Todo.Controllers
                 fields = parameters.Fields
             })
         };
+
+        private IEnumerable<LinkDto> CreateLinks(Guid id, string fields = null) => new List<LinkDto>
+        {
+            IsNullOrWhiteSpace(fields) ?
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", "GET") :
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", "GET"),
+            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", "PUT"),
+            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", "PATCH"),
+            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", "DELETE")
+        };
+
+        private IEnumerable<LinkDto> CreateLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
+        {
+            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
+
+            if (hasPrevious)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", "GET"));
+
+            if (hasNext)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", "GET"));
+
+            return linkDtos;
+        }
     }
+
+    #endregion
 }
