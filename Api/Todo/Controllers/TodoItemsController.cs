@@ -57,12 +57,12 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet(Name = nameof(GetTodoItems))]
-        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
-            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
-            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -120,13 +120,13 @@ namespace Todo.Controllers
         }
 
         [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
-        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
-            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
-            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -153,6 +153,9 @@ namespace Todo.Controllers
         [HttpPost(Name = nameof(PostTodoItemAsync))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -162,7 +165,9 @@ namespace Todo.Controllers
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync();
 
-            ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+            ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                ItemToFullDto(todoItem).ShapeData() :
+                ItemToDto(todoItem).ShapeData();
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                 _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
@@ -175,6 +180,9 @@ namespace Todo.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -189,7 +197,9 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                    ItemToFullDto(todoItem).ShapeData() :
+                    ItemToDto(todoItem).ShapeData();
 
                 if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                     _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
@@ -216,6 +226,9 @@ namespace Todo.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
+        [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+            "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
+            "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
         public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -236,7 +249,9 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync();
 
-                ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
+                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                    ItemToFullDto(todoItem).ShapeData() :
+                    ItemToDto(todoItem).ShapeData();
 
                 if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                     _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
