@@ -164,7 +164,7 @@ namespace Todo.Controllers
 
             ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
 
-            if (headerValue.MediaType.Equals("application/vnd.usbe.hateoas+json", OrdinalIgnoreCase))
+            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                 _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
             return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
@@ -191,7 +191,7 @@ namespace Todo.Controllers
 
                 ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
 
-                if (headerValue.MediaType.Equals("application/vnd.usbe.hateoas+json", OrdinalIgnoreCase))
+                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                     _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
@@ -238,7 +238,7 @@ namespace Todo.Controllers
 
                 ExpandoObject expandoObject = ItemToDto(todoItem).ShapeData();
 
-                if (headerValue.MediaType.Equals("application/vnd.usbe.hateoas+json", OrdinalIgnoreCase))
+                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                     _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
