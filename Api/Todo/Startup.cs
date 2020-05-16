@@ -39,6 +39,8 @@ namespace Todo
                 .AddXmlDataContractSerializerFormatters()
                 .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve);
 
+            _ = services.AddResponseCaching();
+
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
@@ -56,6 +58,8 @@ namespace Todo
             _ = app.UseStaticFiles();
 
             _ = app.UseHttpsRedirection();
+
+            _ = app.UseResponseCaching();
 
             _ = app.UseRouting();
 
