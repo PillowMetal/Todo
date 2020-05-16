@@ -17,7 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" PrivateAssets="All" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.1" />
-    <PackageReference Include="System.Text.Json" Version="5.0.0-preview.4.20216.4" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0-preview.6.20264.1" />
   </ItemGroup>
 
 
