@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Todo.Contexts;
 using Todo.Services;
+using static System.Text.Json.Serialization.ReferenceHandling;
 
 namespace Todo
 {
@@ -37,10 +37,10 @@ namespace Todo
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
                 .AddXmlDataContractSerializerFormatters()
-                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve);
+                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = Preserve);
 
             _ = services.AddResponseCaching();
-
+            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 120, options => options.MustRevalidate = true);
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
@@ -60,6 +60,7 @@ namespace Todo
             _ = app.UseHttpsRedirection();
 
             _ = app.UseResponseCaching();
+            _ = app.UseHttpCacheHeaders();
 
             _ = app.UseRouting();
 
