@@ -194,12 +194,18 @@ dotnet_naming_style.begins_with_i.required_suffix=
 dotnet_naming_style.begins_with_i.word_separator=
 dotnet_naming_style.begins_with_i.capitalization=pascal_case
 
-# IDE0010: Add missing cases
-dotnet_diagnostic.ide0010.severity=none
+#### Manually added supressions ####
 
+# Missing default case
+dotnet_diagnostic.ide0010.severity=none
+# Catch of general exception type
 dotnet_diagnostic.ca1031.severity = none
+# Passing literal as localized parameter
 dotnet_diagnostic.ca1303.severity = none
+#Identifier contains underscores
 dotnet_diagnostic.ca1707.severity = none
+# Consider awaiting task
+dotnet_diagnostic.ca2007.severity = none
 
 [*.proto]
 indent_style=tab
