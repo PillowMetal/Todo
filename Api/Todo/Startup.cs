@@ -1,7 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Todo.Contexts;
 using Todo.Services;
+using static System.Text.Json.Serialization.ReferenceHandling;
 
 namespace Todo
 {
@@ -20,7 +22,7 @@ namespace Todo
 
         public IConfiguration Configuration { get; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "ASP0000:Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'", Justification = "<Pending>")]
+        [SuppressMessage("Design", "ASP0000:Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'", Justification = "<Pending>")]
         public static void ConfigureServices(IServiceCollection services)
         {
             _ = services.AddDbContext<TodoContext>(options => options.UseInMemoryDatabase("TodoList"));
@@ -36,20 +38,30 @@ namespace Todo
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
                 .AddXmlDataContractSerializerFormatters()
-                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve);
+                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = Preserve);
 
+            _ = services.AddResponseCaching();
+            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 120, options => options.MustRevalidate = true);
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-                _ = app.UseDeveloperExceptionPage();
+            _ = env.IsDevelopment()
+                ? app.UseDeveloperExceptionPage()
+                : app.UseExceptionHandler(builder => builder.Run(async context =>
+                {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
+                }));
 
             _ = app.UseDefaultFiles();
             _ = app.UseStaticFiles();
 
             _ = app.UseHttpsRedirection();
+
+            _ = app.UseResponseCaching();
+            _ = app.UseHttpCacheHeaders();
 
             _ = app.UseRouting();
 
