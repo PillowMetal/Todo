@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Todo.Entities;
 using Todo.Models;
+using static System.Reflection.BindingFlags;
 using static System.String;
 
 namespace Todo.Services
@@ -42,6 +42,6 @@ namespace Todo.Services
 
         public bool HasProperties<T>(string fields) =>
             IsNullOrWhiteSpace(fields) || fields.Split(',').All(field =>
-                typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase) != null);
+                typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);
     }
 }

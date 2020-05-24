@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using static System.Reflection.BindingFlags;
 using static System.String;
 using static System.StringComparison;
 
@@ -15,14 +16,14 @@ namespace Todo.Helpers
             var propertyInfos = new List<PropertyInfo?>();
 
             if (IsNullOrWhiteSpace(fields))
-                propertyInfos.AddRange(typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance));
+                propertyInfos.AddRange(typeof(T).GetProperties(Public | Instance));
             else
             {
                 propertyInfos.AddRange(fields.Split(',').Select(field =>
-                    typeof(T).GetProperty(field.Trim(), BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)));
+                    typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)));
 
                 if (propertyInfos.All(propertyInfo => !(propertyInfo?.Name ?? Empty).Equals("id", OrdinalIgnoreCase)))
-                    propertyInfos.Insert(0, typeof(T).GetProperty("id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase));
+                    propertyInfos.Insert(0, typeof(T).GetProperty("id", Public | Instance | IgnoreCase));
             }
 
             var expandoObjects = new List<ExpandoObject>();
