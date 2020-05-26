@@ -9,7 +9,7 @@ using static System.StringComparison;
 
 namespace Todo.Helpers
 {
-    public static class IEnumerableExtenstions
+    public static class IEnumerableExtensions
     {
         public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields)
         {
