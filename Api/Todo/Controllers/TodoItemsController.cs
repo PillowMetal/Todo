@@ -23,8 +23,8 @@ using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
         "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
         "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
