@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Todo.Contexts;
 using Todo.Services;
-using static System.Text.Json.Serialization.ReferenceHandling;
+using static System.Text.Json.Serialization.ReferenceHandler;
 
 namespace Todo
 {
@@ -38,7 +38,7 @@ namespace Todo
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
                 .AddXmlDataContractSerializerFormatters()
-                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = Preserve);
+                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = Preserve);
 
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 120, options => options.MustRevalidate = true);
