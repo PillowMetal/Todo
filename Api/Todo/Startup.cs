@@ -55,10 +55,9 @@ namespace Todo
                     await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
                 }));
 
+            _ = app.UseHttpsRedirection();
             _ = app.UseDefaultFiles();
             _ = app.UseStaticFiles();
-
-            _ = app.UseHttpsRedirection();
 
             _ = app.UseResponseCaching();
             _ = app.UseHttpCacheHeaders();
