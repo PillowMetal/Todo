@@ -7,12 +7,18 @@ namespace Todo.Helpers
 {
     public class PagedList<T> : List<T>
     {
+        #region Properties
+
         public int TotalCount { get; }
         public int PageSize { get; }
         public int TotalPages { get; }
         public int CurrentPage { get; }
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
+
+        #endregion
+
+        #region Constructors
 
         public PagedList(IEnumerable<T> items, int count, int pageSize, int pageNumber)
         {
@@ -23,8 +29,14 @@ namespace Todo.Helpers
             AddRange(items);
         }
 
+        #endregion
+
+        #region Methods
+
         [SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "<Pending>")]
         public static PagedList<T> Create(IQueryable<T> source, int pageSize, int pageNumber) =>
             new PagedList<T>(source.Skip((pageNumber - 1) * pageSize).Take(pageSize), source.Count(), pageSize, pageNumber);
+
+        #endregion
     }
 }
