@@ -105,8 +105,8 @@ namespace Todo.Controllers
             }));
 
             IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
-                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields).ToList() :
-                pagedList.Select(ItemToDto).ShapeData(parameters.Fields).ToList();
+                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id").ToList() :
+                pagedList.Select(ItemToDto).ShapeData(parameters.Fields, "id").ToList();
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
             {
@@ -139,7 +139,9 @@ namespace Todo.Controllers
             if (todoItem == null)
                 return NotFound();
 
-            ExpandoObject expandoObject = isFullRequest ? ItemToFullDto(todoItem).ShapeData(fields) : ItemToDto(todoItem).ShapeData(fields);
+            ExpandoObject expandoObject = isFullRequest ?
+                ItemToFullDto(todoItem).ShapeData(fields, "id") :
+                ItemToDto(todoItem).ShapeData(fields, "id");
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
                 _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));

@@ -10,22 +10,24 @@ namespace Todo.Helpers
 {
     public static class ObjectExtensions
     {
-        public static ExpandoObject ShapeData<T>(this T source, string? fields = null)
+        public static ExpandoObject ShapeData<T>(this T source, string? fields = null, string? keys = null)
         {
-            var dataShapedObject = new ExpandoObject();
-
-            PropertyInfo? idPropertyInfo = typeof(T).GetProperty("id", Public | Instance | IgnoreCase);
-            _ = dataShapedObject.TryAdd((idPropertyInfo?.Name).ToLowerFirstChar(), idPropertyInfo?.GetValue(source));
+            var expandoObject = new ExpandoObject();
 
             if (IsNullOrWhiteSpace(fields))
                 foreach (PropertyInfo propertyInfo in typeof(T).GetProperties(Public | Instance))
-                    _ = dataShapedObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(source));
+                    _ = expandoObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(source));
             else
-                foreach (PropertyInfo? propertyInfo in fields.Split(',').Select(field =>
-                    typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)))
-                    _ = dataShapedObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(source));
+            {
+                if (!IsNullOrWhiteSpace(keys))
+                    foreach (PropertyInfo? propertyInfo in keys.Split(",").Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)))
+                        _ = expandoObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(source));
 
-            return dataShapedObject;
+                foreach (PropertyInfo? propertyInfo in fields.Split(',').Select(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)))
+                    _ = expandoObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(source));
+            }
+
+            return expandoObject;
         }
     }
 }

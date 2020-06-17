@@ -5,13 +5,12 @@ using System.Linq;
 using System.Reflection;
 using static System.Reflection.BindingFlags;
 using static System.String;
-using static System.StringComparison;
 
 namespace Todo.Helpers
 {
     public static class IEnumerableExtensions
     {
-        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields)
+        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string? fields, string? keys = null)
         {
             var propertyInfos = new List<PropertyInfo?>();
 
@@ -19,23 +18,23 @@ namespace Todo.Helpers
                 propertyInfos.AddRange(typeof(T).GetProperties(Public | Instance));
             else
             {
-                propertyInfos.AddRange(fields.Split(',').Select(field =>
-                    typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)));
+                if (!IsNullOrWhiteSpace(keys))
+                    propertyInfos.AddRange(keys.Split(",").Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)));
 
-                if (propertyInfos.All(propertyInfo => !(propertyInfo?.Name ?? Empty).Equals("id", OrdinalIgnoreCase)))
-                    propertyInfos.Insert(0, typeof(T).GetProperty("id", Public | Instance | IgnoreCase));
+                propertyInfos.AddRange(fields.Split(',').Select(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)));
+                propertyInfos = propertyInfos.Distinct().ToList();
             }
 
             var expandoObjects = new List<ExpandoObject>();
 
             foreach (T sourceObject in source)
             {
-                var dataShapedObject = new ExpandoObject();
+                var expandoObject = new ExpandoObject();
 
                 foreach (PropertyInfo? propertyInfo in propertyInfos)
-                    _ = dataShapedObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(sourceObject));
+                    _ = expandoObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(sourceObject));
 
-                expandoObjects.Add(dataShapedObject);
+                expandoObjects.Add(expandoObject);
             }
 
             return expandoObjects;
