@@ -8,7 +8,7 @@ namespace Todo.Helpers
     {
         [SuppressMessage("Design", "CA1308: Replace the call to 'ToLowerInvariant' with 'ToUpperInvariant'", Justification = "<Pending>")]
         public static string ToLowerFirstChar(this string value) => Concat(
-            value?.Length > 0 ? value.First().ToString().ToLowerInvariant() : Empty
-          , value?.Length > 1 ? value.Substring(1) : Empty);
+            value?.Length > 0 ? value.First().ToString().ToLowerInvariant() : Empty,
+            value?.Length > 1 ? value.Substring(1) : Empty);
     }
 }
