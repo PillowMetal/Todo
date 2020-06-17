@@ -111,9 +111,9 @@ namespace Todo.Controllers
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
             {
                 foreach (ExpandoObject expandoObject in expandoObjects)
-                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
+                    _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
 
-                return Ok(new { value = expandoObjects, links = CreateLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
+                return Ok(new { value = expandoObjects, links = CreateTodoItemsLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
             }
 
             return Ok(expandoObjects);
@@ -144,7 +144,7 @@ namespace Todo.Controllers
                 ItemToDto(todoItem).ShapeData(fields, "id");
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
-                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
+                _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
 
             return expandoObject;
         }
@@ -166,7 +166,7 @@ namespace Todo.Controllers
                 ItemToDto(todoItem).ShapeData();
 
             if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
-                _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+                _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
             return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
         }
@@ -195,7 +195,7 @@ namespace Todo.Controllers
                     ItemToDto(todoItem).ShapeData();
 
                 if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
-                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+                    _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
             }
@@ -244,7 +244,7 @@ namespace Todo.Controllers
                     ItemToDto(todoItem).ShapeData();
 
                 if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
-                    _ = expandoObject.TryAdd("links", CreateLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
+                    _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
             }
@@ -335,6 +335,19 @@ namespace Todo.Controllers
             todoItem.IsComplete = dto.IsComplete;
         }
 
+        private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
+        {
+            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
+
+            if (hasPrevious)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", "GET"));
+
+            if (hasNext)
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", "GET"));
+
+            return linkDtos;
+        }
+
         private string CreateTodoItemsUri(TodoItemParameters parameters, ResourceUriType type) => type switch
         {
             PreviousPage => Url.Link(nameof(GetTodoItems), new
@@ -366,7 +379,7 @@ namespace Todo.Controllers
             })
         };
 
-        private IEnumerable<LinkDto> CreateLinks(Guid id, string fields = null) => new List<LinkDto>
+        private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
         {
             IsNullOrWhiteSpace(fields) ?
                 new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", "GET") :
@@ -375,19 +388,6 @@ namespace Todo.Controllers
             new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", "PATCH"),
             new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", "DELETE")
         };
-
-        private IEnumerable<LinkDto> CreateLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
-        {
-            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
-
-            if (hasPrevious)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", "GET"));
-
-            if (hasNext)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", "GET"));
-
-            return linkDtos;
-        }
     }
 
     #endregion
