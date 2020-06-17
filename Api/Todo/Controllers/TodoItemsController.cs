@@ -80,10 +80,10 @@ namespace Todo.Controllers
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
-                if (!TryParse(parameters.IsComplete.Trim(), out bool flag))
+                if (!TryParse(parameters.IsComplete.Trim(), out bool isComplete))
                     return BadRequest();
 
-                queryable = queryable.Where(t => t.IsComplete == flag);
+                queryable = queryable.Where(t => t.IsComplete == isComplete);
             }
 
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
