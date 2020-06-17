@@ -23,8 +23,8 @@ namespace Todo.Services
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
-        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() =>
-            _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
+        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
+            .OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy)
         {
@@ -40,8 +40,7 @@ namespace Todo.Services
                 .All(propertyName => propertyMapping.ContainsKey(propertyName));
         }
 
-        public bool HasProperties<T>(string fields) =>
-            IsNullOrWhiteSpace(fields) || fields.Split(',').All(field =>
-                typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);
+        public bool HasProperties<T>(string fields) => IsNullOrWhiteSpace(fields) || fields
+            .Split(',').All(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);
     }
 }
