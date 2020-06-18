@@ -113,7 +113,7 @@ namespace Todo.Controllers
                 foreach (ExpandoObject expandoObject in expandoObjects)
                     _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
 
-                return Ok(new { value = expandoObjects, links = CreateTodoItemsLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
+                return Ok(new { values = expandoObjects, links = CreateTodoItemsLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
             }
 
             return Ok(expandoObjects);
