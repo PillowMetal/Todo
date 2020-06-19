@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -96,13 +95,7 @@ namespace Todo.Controllers
 
             var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageSize, parameters.PageNumber);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
-            {
-                totalCount = pagedList.TotalCount,
-                pageSize = pagedList.PageSize,
-                totalPages = pagedList.TotalPages,
-                currentPage = pagedList.CurrentPage
-            }));
+            PagedList<TodoItem>.CreatePaginationHeader(Response, pagedList);
 
             IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
                 pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id").ToList() :
