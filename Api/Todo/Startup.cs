@@ -41,7 +41,7 @@ namespace Todo
                 .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = Preserve);
 
             _ = services.AddResponseCaching();
-            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 120, options => options.MustRevalidate = true);
+            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 60, options => options.MustRevalidate = true);
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 

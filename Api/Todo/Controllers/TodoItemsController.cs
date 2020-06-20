@@ -328,6 +328,16 @@ namespace Todo.Controllers
             todoItem.IsComplete = dto.IsComplete;
         }
 
+        private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
+        {
+            IsNullOrWhiteSpace(fields) ?
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", "GET") :
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", "GET"),
+            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", "PUT"),
+            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", "PATCH"),
+            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", "DELETE")
+        };
+
         private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
             var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
@@ -370,16 +380,6 @@ namespace Todo.Controllers
                 pageNumber = parameters.PageNumber,
                 fields = parameters.Fields
             })
-        };
-
-        private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
-        {
-            IsNullOrWhiteSpace(fields) ?
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", "GET") :
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", "GET"),
-            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", "PUT"),
-            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", "PATCH"),
-            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", "DELETE")
         };
     }
 
