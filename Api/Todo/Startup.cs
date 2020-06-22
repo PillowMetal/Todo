@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Todo.Contexts;
 using Todo.Services;
-using static System.Text.Json.Serialization.ReferenceHandling;
 
 namespace Todo
 {
@@ -37,11 +36,10 @@ namespace Todo
                         .AddLogging().AddControllers().AddNewtonsoftJson().Services.BuildServiceProvider()
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
-                .AddXmlDataContractSerializerFormatters()
-                .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandling = Preserve);
+                .AddXmlDataContractSerializerFormatters();
 
             _ = services.AddResponseCaching();
-            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 120, options => options.MustRevalidate = true);
+            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 60, options => options.MustRevalidate = true);
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
@@ -55,10 +53,9 @@ namespace Todo
                     await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
                 }));
 
+            _ = app.UseHttpsRedirection();
             _ = app.UseDefaultFiles();
             _ = app.UseStaticFiles();
-
-            _ = app.UseHttpsRedirection();
 
             _ = app.UseResponseCaching();
             _ = app.UseHttpCacheHeaders();
