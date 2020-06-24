@@ -64,13 +64,13 @@ namespace Todo.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
-            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+            if (!MediaTypeHeaderValue.TryParseList(mediaType.Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
                 return BadRequest();
 
-            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+            bool isFullRequest = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase));
 
             if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(parameters.Fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
@@ -101,7 +101,7 @@ namespace Todo.Controllers
                 pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id").ToList() :
                 pagedList.Select(ItemToDto).ShapeData(parameters.Fields, "id").ToList();
 
-            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+            if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
             {
                 foreach (ExpandoObject expandoObject in expandoObjects)
                     _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
