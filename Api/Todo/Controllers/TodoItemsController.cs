@@ -64,7 +64,7 @@ namespace Todo.Controllers
         [ProducesDefaultResponseType]
         public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
-            if (!MediaTypeHeaderValue.TryParseList(mediaType.Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
