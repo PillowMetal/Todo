@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using static System.Text.Encodings.Web.JavaScriptEncoder;
+using static System.Text.Json.JsonNamingPolicy;
 
 namespace Todo.Helpers
 {
@@ -42,11 +43,15 @@ namespace Todo.Helpers
 
         public static void CreatePaginationHeader(HttpResponse response, PagedList<T> list) => response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
         {
-            totalCount = list.TotalCount,
-            pageSize = list.PageSize,
-            totalPages = list.TotalPages,
-            currentPage = list.CurrentPage
-        }, new JsonSerializerOptions { Encoder = UnsafeRelaxedJsonEscaping }));
+            list.TotalCount,
+            list.PageSize,
+            list.TotalPages,
+            list.CurrentPage
+        }, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = CamelCase,
+            Encoder = UnsafeRelaxedJsonEscaping
+        }));
 
         #endregion
     }
