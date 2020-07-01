@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +15,19 @@ using Todo.Parameters;
 using Todo.Services;
 using static System.Boolean;
 using static System.DateTime;
+using static System.Net.Mime.MediaTypeNames.Application;
 using static System.String;
 using static System.StringComparison;
+using static Microsoft.AspNetCore.Http.HttpMethods;
+using static Microsoft.AspNetCore.Http.StatusCodes;
+using static Microsoft.Net.Http.Headers.HeaderNames;
 using static Todo.Helpers.ResourceUriType;
 
 namespace Todo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json", "application/xml", "application/vnd.usbe.hateoas+json",
+    [Produces(Json, Xml, "application/vnd.usbe.hateoas+json",
         "application/vnd.usbe.todoitem.full+json", "application/vnd.usbe.todoitem.full.hateoas+json",
         "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
     public class TodoItemsController : ControllerBase
@@ -49,18 +52,18 @@ namespace Todo.Controllers
         #region Methods
 
         [HttpOptions(Name = nameof(OptionsTodoItems))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(Status200OK)]
         [ProducesDefaultResponseType]
         public IActionResult OptionsTodoItems()
         {
-            Response.Headers.Add("Allow", "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE");
+            Response.Headers.Add(Allow, $"{Options},{Head},{Get},{Post},{Put},{Patch},{Delete}");
             return Ok();
         }
 
         [HttpHead]
         [HttpGet(Name = nameof(GetTodoItems))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
+        [ProducesResponseType(Status400BadRequest)]
         [ProducesDefaultResponseType]
         public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -113,9 +116,9 @@ namespace Todo.Controllers
         }
 
         [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -143,7 +146,7 @@ namespace Todo.Controllers
         }
 
         [HttpPost(Name = nameof(PostTodoItemAsync))]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(Status201Created)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -165,9 +168,9 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}", Name = nameof(PutTodoItemAsync))]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status201Created)]
+        [ProducesResponseType(Status204NoContent)]
+        [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -208,9 +211,9 @@ namespace Todo.Controllers
         }
 
         [HttpPatch("{id}", Name = nameof(PatchTodoItemAsync))]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status201Created)]
+        [ProducesResponseType(Status204NoContent)]
+        [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType)
         {
@@ -263,8 +266,8 @@ namespace Todo.Controllers
         }
 
         [HttpDelete("{id}", Name = nameof(DeleteTodoItemAsync))]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Status204NoContent)]
+        [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
         {
@@ -331,22 +334,22 @@ namespace Todo.Controllers
         private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
         {
             IsNullOrWhiteSpace(fields) ?
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", "GET") :
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", "GET"),
-            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", "PUT"),
-            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", "PATCH"),
-            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", "DELETE")
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", Get) :
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", Get),
+            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", Put),
+            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", Patch),
+            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
         };
 
         private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
-            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", "GET") };
+            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", Get) };
 
             if (hasPrevious)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", "GET"));
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", Get));
 
             if (hasNext)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", "GET"));
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", Get));
 
             return linkDtos;
         }
