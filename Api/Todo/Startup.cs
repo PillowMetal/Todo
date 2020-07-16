@@ -27,7 +27,7 @@ namespace Todo
         [SuppressMessage("Design", "ASP0000:Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'", Justification = "<Pending>")]
         public static void ConfigureServices(IServiceCollection services)
         {
-            _ = services.AddDbContext<TodoContext>(options => options.UseInMemoryDatabase("TodoList"));
+            _ = services.AddDbContext<TodoContext>(options => options.UseInMemoryDatabase("Todo"));
 
             const string usbeHateoasMediaType = "application/vnd.usbe.hateoas+json";
 
@@ -41,6 +41,7 @@ namespace Todo
                         .AddLogging().AddControllers().AddNewtonsoftJson().Services.BuildServiceProvider()
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
+                .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
 
             _ = services.AddResponseCompression(options =>
