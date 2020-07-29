@@ -9,7 +9,7 @@ namespace Todo.Helpers
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> propertyMapping)
+        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, IDictionary<string, PropertyMappingValue> propertyMapping)
         {
             if (IsNullOrWhiteSpace(orderBy))
                 return source;
