@@ -10,7 +10,7 @@ namespace Todo.Services
 {
     public class PropertyMappingService : IPropertyMappingService
     {
-        private readonly Dictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+        private readonly IDictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
         {
             { "Id", new PropertyMappingValue(new List<string> { "Id" }) },
             { "Name", new PropertyMappingValue(new List<string> { "Name" }) },
@@ -23,7 +23,7 @@ namespace Todo.Services
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
-        public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
+        public IDictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
             .OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy)
@@ -31,7 +31,7 @@ namespace Todo.Services
             if (IsNullOrWhiteSpace(orderBy))
                 return true;
 
-            Dictionary<string, PropertyMappingValue> propertyMapping = GetPropertyMapping<TSource, TDestination>();
+            IDictionary<string, PropertyMappingValue> propertyMapping = GetPropertyMapping<TSource, TDestination>();
 
             return orderBy.Split(',')
                 .Select(clause => clause.Trim())
