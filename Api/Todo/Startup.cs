@@ -41,7 +41,6 @@ namespace Todo
                         .AddLogging().AddControllers().AddNewtonsoftJson().Services.BuildServiceProvider()
                         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
                 })
-                .AddXmlSerializerFormatters()
                 .AddXmlDataContractSerializerFormatters();
 
             _ = services.AddResponseCompression(options =>
