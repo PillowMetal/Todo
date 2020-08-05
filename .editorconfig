@@ -207,10 +207,12 @@ dotnet_diagnostic.ca1031.severity = none
 dotnet_diagnostic.ca1062.severity = none
 # Passing literal as localized parameter
 dotnet_diagnostic.ca1303.severity = none
-#Identifier contains underscores
+# Identifier contains underscores
 dotnet_diagnostic.ca1707.severity = none
 # Consider awaiting task
 dotnet_diagnostic.ca2007.severity = none
+# Collection properties should be read only
+dotnet_diagnostic.ca2227.severity = none
 
 [*.proto]
 indent_style=tab

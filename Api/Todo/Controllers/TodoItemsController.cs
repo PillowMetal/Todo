@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -148,14 +149,14 @@ namespace Todo.Controllers
         [HttpPost(Name = nameof(PostTodoItemAsync))]
         [ProducesResponseType(Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType)
+        public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
 
             TodoItem todoItem = DtoToItem(dto);
             _ = _context.TodoItems.Add(todoItem);
-            _ = await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync(token);
 
             ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
                 ItemToFullDto(todoItem).ShapeData() :
@@ -172,7 +173,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType)
+        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
@@ -184,7 +185,7 @@ namespace Todo.Controllers
                 todoItem = DtoToItem(dto);
                 todoItem.Id = id;
                 _ = _context.TodoItems.Add(todoItem);
-                _ = await _context.SaveChangesAsync();
+                _ = await _context.SaveChangesAsync(token);
 
                 ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
                     ItemToFullDto(todoItem).ShapeData() :
@@ -200,7 +201,7 @@ namespace Todo.Controllers
 
             try
             {
-                _ = await _context.SaveChangesAsync();
+                _ = await _context.SaveChangesAsync(token);
             }
             catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
             {
@@ -215,7 +216,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType)
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
@@ -233,7 +234,7 @@ namespace Todo.Controllers
                 todoItem = DtoToItem(dto);
                 todoItem.Id = id;
                 _ = _context.TodoItems.Add(todoItem);
-                _ = await _context.SaveChangesAsync();
+                _ = await _context.SaveChangesAsync(token);
 
                 ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
                     ItemToFullDto(todoItem).ShapeData() :
@@ -255,7 +256,7 @@ namespace Todo.Controllers
 
             try
             {
-                _ = await _context.SaveChangesAsync();
+                _ = await _context.SaveChangesAsync(token);
             }
             catch (DbUpdateConcurrencyException) when (!TodoItemExists(id))
             {
@@ -269,7 +270,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> DeleteTodoItemAsync(Guid id)
+        public async Task<IActionResult> DeleteTodoItemAsync(Guid id, CancellationToken token)
         {
             TodoItem todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -277,7 +278,7 @@ namespace Todo.Controllers
                 return NotFound();
 
             _ = _context.TodoItems.Remove(todoItem);
-            _ = await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync(token);
 
             return NoContent();
         }
