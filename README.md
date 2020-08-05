@@ -6,7 +6,7 @@ This implementation satisfies all REST constraints as well as Richardson Maturit
 In addition is uses proper identification of resources and methods, an outer facing contract, provides proper error responses (client errors vs. server faults), and contains self-discoverability.
 
 # Features
-1. Filtering for specific keys in the outer contract
+1. Filtering for specific keys in the outer facing contract
 2. Searching via a searchQuery parameter on the underlying data
 3. Sorting via an orderBy query parameter that maps outer facing contract properties to underlying data column(s)
 4. Paging via pageSize and pageNumber query parameters with information returned in an X-Pagaination header in the response
