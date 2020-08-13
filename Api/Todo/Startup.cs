@@ -45,14 +45,21 @@ namespace Todo
 
             _ = services.AddResponseCompression(options =>
             {
-                options.Providers.Add<GzipCompressionProvider>();
                 options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
                 options.EnableForHttps = true;
-                options.MimeTypes = MimeTypes.Concat(new[] { usbeHateoasMediaType });
+                options.MimeTypes = MimeTypes.Concat(new[]
+                {
+                    usbeHateoasMediaType,
+                    "application/vnd.usbe.todoitem.full+json",
+                    "application/vnd.usbe.todoitem.full.hateoas+json",
+                    "application/vnd.usbe.todoitem.friendly+json",
+                    "application/vnd.usbe.todoitem.friendly.hateoas+json"
+                });
             });
 
-            _ = services.Configure<GzipCompressionProviderOptions>(options => options.Level = Optimal);
             _ = services.Configure<BrotliCompressionProviderOptions>(options => options.Level = Optimal);
+            _ = services.Configure<GzipCompressionProviderOptions>(options => options.Level = Optimal);
 
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 60, options => options.MustRevalidate = true);
