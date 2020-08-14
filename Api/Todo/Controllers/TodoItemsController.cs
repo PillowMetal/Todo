@@ -178,7 +178,7 @@ namespace Todo.Controllers
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
 
-            TodoItem todoItem = await _context.TodoItems.FindAsync(id);
+            TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
 
             if (todoItem == null)
             {
@@ -221,7 +221,7 @@ namespace Todo.Controllers
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
 
-            TodoItem todoItem = await _context.TodoItems.FindAsync(id);
+            TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
             var dto = new TodoItemUpdateDto();
 
             if (todoItem == null)
@@ -272,7 +272,7 @@ namespace Todo.Controllers
         [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteTodoItemAsync(Guid id, CancellationToken token)
         {
-            TodoItem todoItem = await _context.TodoItems.FindAsync(id);
+            TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
 
             if (todoItem == null)
                 return NotFound();
