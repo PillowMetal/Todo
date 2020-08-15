@@ -121,7 +121,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType)
+        public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
@@ -131,7 +131,7 @@ namespace Todo.Controllers
             if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(fields))
                 return BadRequest();
 
-            TodoItem todoItem = await _context.TodoItems.FindAsync(id);
+            TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
 
             if (todoItem == null)
                 return NotFound();
