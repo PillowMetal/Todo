@@ -1,7 +1,7 @@
 {
   "projects": [ "src", "test" ],
   "sdk": {
-    "version": "3.1.401",
+    "version": "3.1.402",
     "allowPrerelease": false,
     "rollForward": "disable"
   }
