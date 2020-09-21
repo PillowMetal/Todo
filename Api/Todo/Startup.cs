@@ -62,7 +62,7 @@ namespace Todo
             _ = services.Configure<GzipCompressionProviderOptions>(options => options.Level = Optimal);
 
             _ = services.AddResponseCaching();
-            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 60, options => options.MustRevalidate = true);
+            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
