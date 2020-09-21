@@ -91,9 +91,9 @@ namespace Todo.Controllers
 
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
                 queryable = queryable.Where(t =>
-                    t.Name.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
-                    t.Context.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
-                    t.Project.Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase));
+                    (t.Name ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
+                    (t.Context ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
+                    (t.Project ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase));
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
