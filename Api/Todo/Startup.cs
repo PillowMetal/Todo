@@ -90,6 +90,7 @@ namespace Todo
             _ = app.UseResponseCaching();
 
             _ = app.UseSwagger();
+            _ = app.UseSwaggerUI(options => options.SwaggerEndpoint("open-api-specification/swagger.json", "Todo API"));
 
             _ = app.UseDefaultFiles();
             _ = app.UseStaticFiles();
