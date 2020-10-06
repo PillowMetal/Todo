@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Todo.Contexts;
 using Todo.Services;
 using static System.IO.Compression.CompressionLevel;
@@ -63,6 +64,13 @@ namespace Todo
 
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
+
+            _ = services.AddSwaggerGen(options => options.SwaggerDoc("open-api-specification", new OpenApiInfo
+            {
+                Title = "Todo API",
+                Version = "1.0.0"
+            }));
+
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
@@ -77,11 +85,15 @@ namespace Todo
                 }));
 
             _ = app.UseHttpsRedirection();
-            _ = app.UseDefaultFiles();
-            _ = app.UseStaticFiles();
 
             _ = app.UseResponseCompression();
             _ = app.UseResponseCaching();
+
+            _ = app.UseSwagger();
+
+            _ = app.UseDefaultFiles();
+            _ = app.UseStaticFiles();
+
             _ = app.UseHttpCacheHeaders();
 
             _ = app.UseRouting();
