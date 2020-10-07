@@ -71,7 +71,7 @@ namespace Todo
             _ = services.AddSwaggerGen(options => options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
             {
                 Title = SwaggerTitle,
-                Version = "1.0.0"
+                Version = "1"
             }));
 
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
@@ -93,6 +93,7 @@ namespace Todo
             _ = app.UseResponseCaching();
 
             _ = app.UseSwagger();
+
             _ = app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint($"{SwaggerEndpoint}/swagger.json", SwaggerTitle);
