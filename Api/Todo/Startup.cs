@@ -21,6 +21,9 @@ namespace Todo
 {
     public class Startup
     {
+        private const string SwaggerEndpoint = "open-api-specification";
+        private const string SwaggerTitle = "Todo API";
+
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
@@ -65,9 +68,9 @@ namespace Todo
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
 
-            _ = services.AddSwaggerGen(options => options.SwaggerDoc("open-api-specification", new OpenApiInfo
+            _ = services.AddSwaggerGen(options => options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
             {
-                Title = "Todo API",
+                Title = SwaggerTitle,
                 Version = "1.0.0"
             }));
 
@@ -90,7 +93,11 @@ namespace Todo
             _ = app.UseResponseCaching();
 
             _ = app.UseSwagger();
-            _ = app.UseSwaggerUI(options => options.SwaggerEndpoint("open-api-specification/swagger.json", "Todo API"));
+            _ = app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint($"{SwaggerEndpoint}/swagger.json", SwaggerTitle);
+                options.DocumentTitle += " - Todo";
+            });
 
             _ = app.UseDefaultFiles();
             _ = app.UseStaticFiles();
