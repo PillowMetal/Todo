@@ -148,6 +148,7 @@ namespace Todo.Controllers
 
         [HttpPost(Name = nameof(PostTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
+        [ProducesResponseType(Status400BadRequest)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
@@ -171,6 +172,7 @@ namespace Todo.Controllers
         [HttpPut("{id}", Name = nameof(PutTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
+        [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
@@ -214,6 +216,7 @@ namespace Todo.Controllers
         [HttpPatch("{id}", Name = nameof(PatchTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
+        [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
