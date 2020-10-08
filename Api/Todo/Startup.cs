@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Todo.Contexts;
 using Todo.Services;
 using static System.IO.Compression.CompressionLevel;
+using static System.String;
 using static Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults;
 
 namespace Todo
@@ -96,7 +97,8 @@ namespace Todo
 
             _ = app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"{SwaggerEndpoint}/swagger.json", SwaggerTitle);
+                options.SwaggerEndpoint($"swagger/{SwaggerEndpoint}/swagger.json", SwaggerTitle);
+                options.RoutePrefix = Empty;
                 options.DocumentTitle += " - Todo";
             });
 
