@@ -63,10 +63,10 @@ namespace Todo.Controllers
 
         [HttpHead]
         [HttpGet(Name = nameof(GetTodoItems))]
-        [ProducesResponseType(Status200OK, Type = typeof(IEnumerable<ExpandoObject>))]
+        [ProducesResponseType(Status200OK, Type = typeof(IEnumerable<TodoItemDto>))]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public IActionResult GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
+        public ActionResult<IEnumerable<ExpandoObject>> GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
@@ -117,7 +117,7 @@ namespace Todo.Controllers
         }
 
         [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
-        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status200OK, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -147,7 +147,7 @@ namespace Todo.Controllers
         }
 
         [HttpPost(Name = nameof(PostTodoItemAsync))]
-        [ProducesResponseType(Status201Created)]
+        [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
@@ -169,11 +169,11 @@ namespace Todo.Controllers
         }
 
         [HttpPut("{id}", Name = nameof(PutTodoItemAsync))]
-        [ProducesResponseType(Status201Created)]
+        [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
+        public async Task<ActionResult<ExpandoObject>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
@@ -212,11 +212,11 @@ namespace Todo.Controllers
         }
 
         [HttpPatch("{id}", Name = nameof(PatchTodoItemAsync))]
-        [ProducesResponseType(Status201Created)]
+        [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<TodoItemDto>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
+        public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
                 return BadRequest();
