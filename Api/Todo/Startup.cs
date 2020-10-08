@@ -69,11 +69,16 @@ namespace Todo
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
 
-            _ = services.AddSwaggerGen(options => options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
+            _ = services.AddSwaggerGen(options =>
             {
-                Title = SwaggerTitle,
-                Version = "1"
-            }));
+                options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
+                {
+                    Title = SwaggerTitle,
+                    Version = "1"
+                });
+
+                options.DescribeAllParametersInCamelCase();
+            });
 
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
