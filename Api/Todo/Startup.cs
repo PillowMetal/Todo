@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
@@ -74,7 +75,19 @@ namespace Todo
                 options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
                 {
                     Title = SwaggerTitle,
-                    Version = "1"
+                    Version = "1",
+                    Description = "Through this API you can create, edit, and delete to do list items.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Steve Swayne",
+                        Url = new Uri("https://www.linkedin.com/in/steveswayne"),
+                        Email = "steve@swaynesworld.net"
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT License",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
                 });
 
                 options.DescribeAllParametersInCamelCase();
