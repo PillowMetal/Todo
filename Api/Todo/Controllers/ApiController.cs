@@ -13,7 +13,6 @@ namespace Todo.Controllers
     {
         [HttpOptions(Name = nameof(OptionsApi))]
         [ProducesResponseType(Status200OK)]
-        [ProducesDefaultResponseType]
         public IActionResult OptionsApi()
         {
             Response.Headers.Add(Allow, $"{Options},{Head},{Get}");
@@ -23,7 +22,6 @@ namespace Todo.Controllers
         [HttpHead]
         [HttpGet(Name = nameof(GetApi))]
         [ProducesResponseType(Status200OK)]
-        [ProducesDefaultResponseType]
         public ActionResult<IEnumerable<LinkDto>> GetApi() => new List<LinkDto>
         {
             new LinkDto(Url.Link(nameof(GetApi), new { }), "self", Get),
