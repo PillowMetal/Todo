@@ -146,6 +146,7 @@ namespace Todo.Controllers
         [HttpPost(Name = nameof(PostTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status400BadRequest)]
+        [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -170,6 +171,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
+        [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
@@ -213,6 +215,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
+        [Consumes("application/json-patch+json")]
         public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
