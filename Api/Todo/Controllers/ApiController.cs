@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Todo.Models;
+using static System.Net.Mime.MediaTypeNames.Application;
 using static Microsoft.AspNetCore.Http.HttpMethods;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.Net.Http.Headers.HeaderNames;
@@ -9,6 +10,7 @@ namespace Todo.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Produces(Json)]
     public class ApiController : ControllerBase
     {
         [HttpOptions(Name = nameof(OptionsApi))]
