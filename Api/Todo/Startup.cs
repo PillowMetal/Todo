@@ -17,6 +17,7 @@ using Todo.Contexts;
 using Todo.Services;
 using static System.IO.Compression.CompressionLevel;
 using static System.String;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults;
 
 namespace Todo
@@ -41,6 +42,9 @@ namespace Todo
                 .AddControllers(options =>
                 {
                     options.ReturnHttpNotAcceptable = true;
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status400BadRequest));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status406NotAcceptable));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status500InternalServerError));
                     options.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().First().SupportedMediaTypes.Add(usbeHateoasMediaType);
 
                     options.InputFormatters.Insert(0, new ServiceCollection()
