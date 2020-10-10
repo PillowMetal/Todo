@@ -10,7 +10,7 @@ namespace Todo.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Produces(Json)]
+    [Produces(Json, Xml)]
     public class ApiController : ControllerBase
     {
         [HttpOptions(Name = nameof(OptionsApi))]
@@ -32,7 +32,9 @@ namespace Todo.Controllers
             new LinkDto(Url.Link("OptionsTodoItems", new { }), "options-todoitems", Options),
             new LinkDto(Url.Link("GetTodoItems", new { }), "head-todoitem", Head),
             new LinkDto(Url.Link("GetTodoItems", new { }), "get-todoitems", Get),
-            new LinkDto(Url.Link("PostTodoItemAsync", new { }), "post-todoitem", Post)
+            new LinkDto(Url.Link("PostTodoItemAsync", new { }), "post-todoitem", Post),
+            new LinkDto($"{Request.Scheme}://{Request.Host}", "get-swagger-ui", Get),
+            new LinkDto($"{Request.Scheme}://{Request.Host}/swagger/open-api-specification/swagger.json", "get-open-api-specification", Get)
         };
     }
 }
