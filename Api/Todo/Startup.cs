@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Todo.Contexts;
+using Todo.Filters;
 using Todo.Services;
 using static System.IO.Compression.CompressionLevel;
 using static System.String;
@@ -95,6 +96,7 @@ namespace Todo
                 });
 
                 options.DescribeAllParametersInCamelCase();
+                options.OperationFilter<ApiParameterFilter>();
             });
 
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
