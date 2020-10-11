@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
@@ -11,15 +12,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Todo.Contexts;
+using Todo.Filters;
 using Todo.Services;
 using static System.IO.Compression.CompressionLevel;
+using static System.String;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults;
 
 namespace Todo
 {
     public class Startup
     {
+        private const string SwaggerEndpoint = "open-api-specification";
+        private const string SwaggerTitle = "Todo API";
+
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
@@ -35,6 +43,9 @@ namespace Todo
                 .AddControllers(options =>
                 {
                     options.ReturnHttpNotAcceptable = true;
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status400BadRequest));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status406NotAcceptable));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), Status500InternalServerError));
                     options.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().First().SupportedMediaTypes.Add(usbeHateoasMediaType);
 
                     options.InputFormatters.Insert(0, new ServiceCollection()
@@ -63,6 +74,31 @@ namespace Todo
 
             _ = services.AddResponseCaching();
             _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
+
+            _ = services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
+                {
+                    Title = SwaggerTitle,
+                    Version = "1",
+                    Description = "Through this API you can create, edit, and delete to do list items.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Steve Swayne",
+                        Url = new Uri("https://www.linkedin.com/in/steveswayne"),
+                        Email = "steve@swaynesworld.net"
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT License",
+                        Url = new Uri("https://opensource.org/licenses/MIT")
+                    }
+                });
+
+                options.DescribeAllParametersInCamelCase();
+                options.OperationFilter<ApiParameterFilter>();
+            });
+
             _ = services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
@@ -77,11 +113,22 @@ namespace Todo
                 }));
 
             _ = app.UseHttpsRedirection();
-            _ = app.UseDefaultFiles();
-            _ = app.UseStaticFiles();
 
             _ = app.UseResponseCompression();
             _ = app.UseResponseCaching();
+
+            _ = app.UseSwagger();
+
+            _ = app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint($"swagger/{SwaggerEndpoint}/swagger.json", SwaggerTitle);
+                options.RoutePrefix = Empty;
+                options.DocumentTitle += " - Todo";
+            });
+
+            _ = app.UseDefaultFiles();
+            _ = app.UseStaticFiles();
+
             _ = app.UseHttpCacheHeaders();
 
             _ = app.UseRouting();

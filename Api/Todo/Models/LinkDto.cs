@@ -6,6 +6,8 @@
         public string Rel { get; set; }
         public string Method { get; set; }
 
+        public LinkDto() { }
+
         public LinkDto(string href, string rel, string method)
         {
             Href = href;
