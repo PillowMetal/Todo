@@ -343,47 +343,37 @@ namespace Todo.Controllers
 
         private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
-            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(parameters, Current), "self", Get) };
+            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(Current), "self", Get) };
 
             if (hasPrevious)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, PreviousPage), "previous-page", Get));
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(PreviousPage), "previous-page", Get));
 
             if (hasNext)
-                linkDtos.Add(new LinkDto(CreateTodoItemsUri(parameters, NextPage), "next-page", Get));
+                linkDtos.Add(new LinkDto(CreateTodoItemsUri(NextPage), "next-page", Get));
 
             return linkDtos;
-        }
 
-        private string CreateTodoItemsUri(TodoItemParameters parameters, ResourceUriType type) => type switch
-        {
-            PreviousPage => Url.Link(nameof(GetTodoItems), new
+            string CreateTodoItemsUri(ResourceUriType type)
             {
-                isComplete = parameters.IsComplete,
-                searchQuery = parameters.SearchQuery,
-                orderBy = parameters.OrderBy,
-                pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber - 1,
-                fields = parameters.Fields
-            }),
-            NextPage => Url.Link(nameof(GetTodoItems), new
-            {
-                isComplete = parameters.IsComplete,
-                searchQuery = parameters.SearchQuery,
-                orderBy = parameters.OrderBy,
-                pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber + 1,
-                fields = parameters.Fields
-            }),
-            _ => Url.Link(nameof(GetTodoItems), new
-            {
-                isComplete = parameters.IsComplete,
-                searchQuery = parameters.SearchQuery,
-                orderBy = parameters.OrderBy,
-                pageSize = parameters.PageSize,
-                pageNumber = parameters.PageNumber,
-                fields = parameters.Fields
-            })
-        };
+                dynamic expandoObject = new ExpandoObject();
+
+                expandoObject.isComplete = parameters.IsComplete;
+                expandoObject.searchQuery = parameters.SearchQuery;
+                expandoObject.orderBy = parameters.OrderBy;
+                expandoObject.pageSize = parameters.PageSize;
+
+                expandoObject.pageNumber = parameters.PageNumber + type switch
+                {
+                    PreviousPage => -1,
+                    NextPage => 1,
+                    _ => 0
+                };
+
+                expandoObject.fields = parameters.Fields;
+
+                return Url.Link(nameof(GetTodoItems), expandoObject);
+            }
+        }
     }
 
     #endregion
