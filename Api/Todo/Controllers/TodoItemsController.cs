@@ -108,7 +108,11 @@ namespace Todo.Controllers
                 foreach (ExpandoObject expandoObject in expandoObjects)
                     _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], parameters.Fields));
 
-                return Ok(new { values = expandoObjects, links = CreateTodoItemsLinks(parameters, pagedList.HasPrevious, pagedList.HasNext) });
+                return Ok(new
+                {
+                    values = expandoObjects,
+                    links = CreateTodoItemsLinks(parameters, pagedList.HasPrevious, pagedList.HasNext)
+                });
             }
 
             return Ok(expandoObjects);
@@ -335,7 +339,7 @@ namespace Todo.Controllers
         {
             IsNullOrWhiteSpace(fields) ?
                 new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", Get) :
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), ")self", Get),
+                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), "self", Get),
             new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", Put),
             new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", Patch),
             new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
