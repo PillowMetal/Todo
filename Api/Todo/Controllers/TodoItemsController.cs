@@ -77,7 +77,7 @@ namespace Todo.Controllers
             if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(parameters.Fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
 
-            IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
+            IQueryable<TodoItem> queryable = _context.TodoItems;
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
@@ -337,9 +337,7 @@ namespace Todo.Controllers
 
         private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
         {
-            IsNullOrWhiteSpace(fields) ?
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id }), "self", Get) :
-                new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), "self", Get),
+            new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), "self", Get),
             new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", Put),
             new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", Patch),
             new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
