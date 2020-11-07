@@ -77,7 +77,7 @@ namespace Todo.Controllers
             if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(parameters.Fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(parameters.Fields))
                 return BadRequest();
 
-            IQueryable<TodoItem> queryable = _context.TodoItems.AsQueryable();
+            IQueryable<TodoItem> queryable = _context.TodoItems;
 
             if (!IsNullOrWhiteSpace(parameters.IsComplete))
             {
