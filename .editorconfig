@@ -199,6 +199,8 @@ dotnet_naming_style.begins_with_i.capitalization=pascal_case
 
 #### Manually added diagnostic supressions ####
 
+# Remove unnecessary suppressions
+dotnet_remove_unnecessary_suppression_exclusions = category: ReSharper
 # Missing default case
 dotnet_diagnostic.ide0010.severity=none
 # Catch of general exception type
