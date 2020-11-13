@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,6 @@ using static System.Text.Json.JsonNamingPolicy;
 
 namespace Todo.Helpers
 {
-    [SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "<Pending>")]
     public class PagedList<T> : List<T>
     {
         #region Properties
@@ -25,28 +23,25 @@ namespace Todo.Helpers
 
         #region Constructors
 
-        public PagedList(IEnumerable<T> items, int count, int pageSize, int pageNumber)
+        public PagedList(IQueryable<T> source, int pageSize, int pageNumber)
         {
-            TotalCount = count;
+            TotalCount = source.Count();
             PageSize = pageSize;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalPages = (int)Math.Ceiling(TotalCount / (double)pageSize);
             CurrentPage = pageNumber;
-            AddRange(items);
+            AddRange(source.Skip((pageNumber - 1) * pageSize).Take(pageSize));
         }
 
         #endregion
 
         #region Methods
 
-        public static PagedList<T> Create(IQueryable<T> source, int pageSize, int pageNumber) => new
-            PagedList<T>(source.Skip((pageNumber - 1) * pageSize).Take(pageSize), source.Count(), pageSize, pageNumber);
-
-        public static void CreatePaginationHeader(HttpResponse response, PagedList<T> list) => response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
+        public void CreatePaginationHeader(HttpResponse response) => response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
         {
-            list.TotalCount,
-            list.PageSize,
-            list.TotalPages,
-            list.CurrentPage
+            TotalCount,
+            PageSize,
+            TotalPages,
+            CurrentPage
         }, new JsonSerializerOptions
         {
             PropertyNamingPolicy = CamelCase,
