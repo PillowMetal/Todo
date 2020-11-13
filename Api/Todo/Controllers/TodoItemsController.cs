@@ -95,9 +95,9 @@ namespace Todo.Controllers
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
-            var pagedList = PagedList<TodoItem>.Create(queryable, parameters.PageSize, parameters.PageNumber);
+            var pagedList = new PagedList<TodoItem>(queryable, parameters.PageSize, parameters.PageNumber);
 
-            PagedList<TodoItem>.CreatePaginationHeader(Response, pagedList);
+            pagedList.CreatePaginationHeader(Response);
 
             IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
                 pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id").ToList() :
