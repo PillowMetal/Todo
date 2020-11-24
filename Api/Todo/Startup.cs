@@ -44,6 +44,7 @@ namespace Todo
                 {
                     options.ReturnHttpNotAcceptable = true;
                     options.Filters.Add(new ProducesResponseTypeAttribute(Status400BadRequest));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(Status405MethodNotAllowed));
                     options.Filters.Add(new ProducesResponseTypeAttribute(Status406NotAcceptable));
                     options.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), Status500InternalServerError));
                     options.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().Single().SupportedMediaTypes.Add(usbeHateoasMediaType);
