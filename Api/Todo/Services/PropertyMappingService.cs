@@ -5,12 +5,13 @@ using Todo.Entities;
 using Todo.Models;
 using static System.Reflection.BindingFlags;
 using static System.String;
+using static System.StringComparer;
 
 namespace Todo.Services
 {
     public class PropertyMappingService : IPropertyMappingService
     {
-        private readonly IDictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+        private readonly IDictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new Dictionary<string, PropertyMappingValue>(OrdinalIgnoreCase)
         {
             { "Id", new PropertyMappingValue(new List<string> { "Id" }) },
             { "Name", new PropertyMappingValue(new List<string> { "Name" }) },
@@ -24,7 +25,7 @@ namespace Todo.Services
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
         public IDictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
-            .OfType<PropertyMapping<TSource, TDestination>>().First().MappingDictionary;
+            .OfType<PropertyMapping<TSource, TDestination>>().Single().MappingDictionary;
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy)
         {
