@@ -46,11 +46,11 @@ namespace Todo
                     options.Filters.Add(new ProducesResponseTypeAttribute(Status400BadRequest));
                     options.Filters.Add(new ProducesResponseTypeAttribute(Status406NotAcceptable));
                     options.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), Status500InternalServerError));
-                    options.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().First().SupportedMediaTypes.Add(usbeHateoasMediaType);
+                    options.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().Single().SupportedMediaTypes.Add(usbeHateoasMediaType);
 
                     options.InputFormatters.Insert(0, new ServiceCollection()
                         .AddLogging().AddControllers().AddNewtonsoftJson().Services.BuildServiceProvider()
-                        .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First());
+                        .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().Single());
                 })
                 .AddXmlDataContractSerializerFormatters();
 
