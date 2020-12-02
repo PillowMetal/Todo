@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -10,9 +9,9 @@ namespace Todo.Helpers
 {
     public static class IEnumerableExtensions
     {
-        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string? fields, string? keys = null)
+        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields, string keys = null)
         {
-            var propertyInfos = new List<PropertyInfo?>();
+            var propertyInfos = new List<PropertyInfo>();
 
             if (IsNullOrWhiteSpace(fields))
                 propertyInfos.AddRange(typeof(T).GetProperties(Public | Instance));
@@ -31,8 +30,8 @@ namespace Todo.Helpers
             {
                 var expandoObject = new ExpandoObject();
 
-                foreach (PropertyInfo? propertyInfo in propertyInfos)
-                    _ = expandoObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(sourceObject));
+                foreach (PropertyInfo propertyInfo in propertyInfos)
+                    _ = expandoObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(sourceObject));
 
                 expandoObjects.Add(expandoObject);
             }
