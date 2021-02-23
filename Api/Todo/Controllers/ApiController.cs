@@ -26,15 +26,15 @@ namespace Todo.Controllers
         [ProducesResponseType(Status200OK)]
         public ActionResult<IEnumerable<LinkDto>> GetApi() => new List<LinkDto>
         {
-            new LinkDto(Url.Link(nameof(GetApi), new { }), "self", Get),
-            new LinkDto(Url.Link(nameof(OptionsApi), new { }), "options-api", Options),
-            new LinkDto(Url.Link(nameof(GetApi), new { }), "head-api", Head),
-            new LinkDto(Url.Link("OptionsTodoItems", new { }), "options-todoitems", Options),
-            new LinkDto(Url.Link("GetTodoItems", new { }), "head-todoitem", Head),
-            new LinkDto(Url.Link("GetTodoItems", new { }), "get-todoitems", Get),
-            new LinkDto(Url.Link("PostTodoItemAsync", new { }), "post-todoitem", Post),
-            new LinkDto($"{Request.Scheme}://{Request.Host}", "get-swagger-ui", Get),
-            new LinkDto($"{Request.Scheme}://{Request.Host}/swagger/open-api-specification/swagger.json", "get-open-api-specification", Get)
+            new(Url.Link(nameof(GetApi), new { }), "self", Get),
+            new(Url.Link(nameof(OptionsApi), new { }), "options-api", Options),
+            new(Url.Link(nameof(GetApi), new { }), "head-api", Head),
+            new(Url.Link("OptionsTodoItems", new { }), "options-todoitems", Options),
+            new(Url.Link("GetTodoItems", new { }), "head-todoitem", Head),
+            new(Url.Link("GetTodoItems", new { }), "get-todoitems", Get),
+            new(Url.Link("PostTodoItemAsync", new { }), "post-todoitem", Post),
+            new($"{Request.Scheme}://{Request.Host}", "get-swagger-ui", Get),
+            new($"{Request.Scheme}://{Request.Host}/swagger/open-api-specification/swagger.json", "get-open-api-specification", Get)
         };
     }
 }
