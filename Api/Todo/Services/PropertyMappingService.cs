@@ -11,7 +11,7 @@ namespace Todo.Services
 {
     public class PropertyMappingService : IPropertyMappingService
     {
-        private readonly IDictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new Dictionary<string, PropertyMappingValue>(OrdinalIgnoreCase)
+        private readonly Dictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new(OrdinalIgnoreCase)
         {
             { "Id", new PropertyMappingValue(new List<string> { "Id" }) },
             { "Name", new PropertyMappingValue(new List<string> { "Name" }) },
@@ -20,7 +20,7 @@ namespace Todo.Services
             { "IsComplete", new PropertyMappingValue(new List<string> { "IsComplete" }) }
         };
 
-        private readonly IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
+        private readonly List<IPropertyMapping> _propertyMappings = new();
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 

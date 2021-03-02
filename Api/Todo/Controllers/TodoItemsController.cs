@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 using System.Threading;
@@ -95,7 +96,7 @@ namespace Todo.Controllers
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
-            var pagedList = new PagedList<TodoItem>(queryable, parameters.PageSize, parameters.PageNumber);
+            PagedList<TodoItem> pagedList = new(queryable, parameters.PageSize, parameters.PageNumber);
 
             pagedList.CreatePaginationHeader(Response);
 
@@ -226,7 +227,7 @@ namespace Todo.Controllers
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
-            var dto = new TodoItemUpdateDto();
+            TodoItemUpdateDto dto = new();
 
             if (todoItem == null)
             {
@@ -343,9 +344,10 @@ namespace Todo.Controllers
             new(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
         };
 
+        [SuppressMessage("ReSharper", "ArrangeObjectCreationWhenTypeNotEvident", Justification = "C# allows this because the type is known")]
         private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
-            var linkDtos = new List<LinkDto> { new(CreateTodoItemsUri(Current), "self", Get) };
+            List<LinkDto> linkDtos = new() { new(CreateTodoItemsUri(Current), "self", Get) };
 
             if (hasPrevious)
                 linkDtos.Add(new LinkDto(CreateTodoItemsUri(PreviousPage), "previous-page", Get));
