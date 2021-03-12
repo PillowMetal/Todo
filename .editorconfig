@@ -28,7 +28,7 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:warning
 
 # Modifier preferences
-dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 
 # Expression-level preferences
 dotnet_style_coalesce_expression = true:warning
@@ -54,7 +54,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_code_quality_unused_parameters = all:warning
 
 # Suppression preferences
-dotnet_remove_unnecessary_suppression_exclusions = none
+dotnet_remove_unnecessary_suppression_exclusions = warning
 
 #### C# Coding Conventions ####
 
@@ -85,7 +85,7 @@ csharp_style_conditional_delegate_call = true:warning
 
 # Modifier preferences
 csharp_prefer_static_local_function = true:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 
 # Code-block preferences
 csharp_prefer_braces = false:warning
@@ -94,6 +94,7 @@ csharp_prefer_simple_using_statement = true:warning
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true:warning
 csharp_style_deconstructed_variable_declaration = true:warning
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
 csharp_style_inlined_variable_declaration = true:warning
 csharp_style_pattern_local_over_anonymous_function = true:warning
 csharp_style_prefer_index_operator = true:warning
@@ -375,7 +376,6 @@ resharper_arrange_static_member_qualifier_highlighting = warning
 resharper_arrange_trailing_comma_in_multiline_lists_highlighting = warning
 resharper_arrange_trailing_comma_in_singleline_lists_highlighting = warning
 resharper_arrange_var_keywords_in_deconstructing_declaration_highlighting = warning
-resharper_assignment_is_fully_discarded_highlighting = warning
 resharper_auto_property_can_be_made_get_only_global_highlighting = warning
 resharper_auto_property_can_be_made_get_only_local_highlighting = warning
 resharper_bad_attribute_brackets_spaces_highlighting = warning
@@ -485,8 +485,8 @@ resharper_merge_conditional_expression_when_possible_highlighting = warning
 resharper_merge_sequential_checks_highlighting = warning
 resharper_merge_sequential_checks_when_possible_highlighting = warning
 resharper_merge_sequential_patterns_highlighting = warning
-resharper_method_has_async_overload_highlighting = hint
-resharper_method_has_async_overload_with_cancellation_highlighting = hint
+resharper_method_has_async_overload_highlighting = warning
+resharper_method_has_async_overload_with_cancellation_highlighting = warning
 resharper_method_supports_cancellation_highlighting = warning
 resharper_missing_alt_attribute_in_img_tag_highlighting = warning
 resharper_missing_blank_lines_highlighting = hint
@@ -498,8 +498,6 @@ resharper_more_specific_foreach_variable_type_available_highlighting = warning
 resharper_multiple_spaces_highlighting = warning
 resharper_multiple_statements_on_one_line_highlighting = warning
 resharper_multiple_type_members_on_one_line_highlighting = warning
-resharper_mvc_action_not_resolved_highlighting = none
-resharper_mvc_view_not_resolved_highlighting = none
 resharper_negative_equality_expression_highlighting = warning
 resharper_nested_string_interpolation_highlighting = warning
 resharper_not_accessed_field_global_highlighting = warning
