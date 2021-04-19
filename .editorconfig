@@ -705,3 +705,47 @@ dotnet_diagnostic.ca1062.severity = none
 dotnet_diagnostic.ca2007.severity = silent
 # Collection properties should be read only
 dotnet_diagnostic.ca2227.severity = none
+
+[Api/Todo/Startup.cs]
+# Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+dotnet_diagnostic.asp0000.severity = none
+# Remove unread private members
+dotnet_diagnostic.ide0052.severity = none
+resharper_unused_auto_property_accessor_local_highlighting = none
+
+[Api/Todo/Contexts/TodoContext.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Entities/TodoItem.cs]
+resharper_property_can_be_made_init_only_global_highlighting = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Filters/ApiParameterFilter.cs]
+resharper_class_never_instantiated_global_highlighting = none
+
+[Api/Todo/Helpers/QueryableExtensions.cs]
+# Avoid dead conditional code
+dotnet_diagnostic.ca1508.severity = none
+
+[Api/Todo/Helpers/StringExtensions.cs]
+# Normalize strings to uppercase
+dotnet_diagnostic.ca1308.severity = none
+
+[Api/Todo/Models/**.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Models/LinkDto.cs]
+resharper_member_can_be_private_global_highlighting = none
+resharper_unused_member_global_highlighting = none
+
+[Api/Todo/Parameters/TodoItemParameters.cs]
+resharper_auto_property_can_be_made_get_only_global_highlighting = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+resharper_unused_member_global_highlighting = none
+
+[Api/Todo/Services/IPropertyMapping.cs]
+# Avoid empty interfaces
+dotnet_diagnostic.ca1040.severity = none
+
+[Api/Todo/Services/PropertyMapping.cs]
+resharper_unused_type_parameter_highlighting = none
