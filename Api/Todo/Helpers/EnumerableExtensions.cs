@@ -7,7 +7,7 @@ using static System.String;
 
 namespace Todo.Helpers
 {
-    public static class IEnumerableExtensions
+    public static class EnumerableExtensions
     {
         public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields, string keys = null)
         {
