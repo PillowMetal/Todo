@@ -8,12 +8,12 @@ namespace Todo.Models
     public abstract class TodoItemManipulationDto : IValidatableObject
     {
         [Required]
-        public string Name { get; set; }
+        public string Name { get; init; }
 
-        public virtual string Project { get; set; }
-        public string Context { get; set; }
-        public DateTime Date { get; set; } = Today;
-        public bool IsComplete { get; set; }
+        public virtual string Project { get; init; }
+        public string Context { get; init; }
+        public DateTime Date { get; init; } = Today;
+        public bool IsComplete { get; init; }
 
         #region Implementation of IValidatableObject
 
