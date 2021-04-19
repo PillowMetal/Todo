@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RuntimeFrameworkVersion>5.0.4</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>5.0.5</RuntimeFrameworkVersion>
     <LangVersion>9</LangVersion>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>5.0</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-    <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
@@ -17,20 +17,16 @@
 
   <ItemGroup>
     <PackageReference Include="Marvin.Cache.Headers" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
-      <PrivateAssets>all</PrivateAssets>
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" PrivateAssets="All" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.9" />
   </ItemGroup>
 
 </Project>
