@@ -12,6 +12,6 @@ namespace Todo.Filters
             .Where(description => description.ParameterDescriptor.BindingInfo.BinderModelName == "Accept")
             .ToList()
             .ForEach(description => operation.Parameters
-                .Remove(operation.Parameters.Single(parameter => parameter.Name.Equals(description.Name, InvariantCultureIgnoreCase))));
+                .Remove(operation.Parameters.Single(parameter => parameter.Name.Equals(description.Name, OrdinalIgnoreCase))));
     }
 }

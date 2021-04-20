@@ -12,10 +12,10 @@ namespace Todo.Helpers
     {
         #region Properties
 
-        public int TotalCount { get; }
-        public int PageSize { get; }
-        public int TotalPages { get; }
-        public int CurrentPage { get; }
+        private int TotalCount { get; }
+        private int PageSize { get; }
+        private int TotalPages { get; }
+        private int CurrentPage { get; }
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
 
