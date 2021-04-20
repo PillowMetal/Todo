@@ -95,7 +95,7 @@ namespace Todo.Controllers
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
-            var pagedList = new PagedList<TodoItem>(queryable, parameters.PageSize, parameters.PageNumber);
+            PagedList<TodoItem> pagedList = new(queryable, parameters.PageSize, parameters.PageNumber);
 
             pagedList.CreatePaginationHeader(Response);
 
@@ -226,7 +226,7 @@ namespace Todo.Controllers
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
-            var dto = new TodoItemUpdateDto();
+            TodoItemUpdateDto dto = new();
 
             if (todoItem == null)
             {
@@ -288,7 +288,7 @@ namespace Todo.Controllers
 
         private bool TodoItemExists(Guid id) => _context.TodoItems.Any(t => t.Id == id);
 
-        private static TodoItemDto ItemToDto(TodoItem todoItem) => new TodoItemDto
+        private static TodoItemDto ItemToDto(TodoItem todoItem) => new()
         {
             Id = todoItem.Id,
             Name = todoItem.Name,
@@ -297,7 +297,7 @@ namespace Todo.Controllers
             IsComplete = todoItem.IsComplete
         };
 
-        private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new TodoItemFullDto
+        private static TodoItemFullDto ItemToFullDto(TodoItem todoItem) => new()
         {
             Id = todoItem.Id,
             Name = todoItem.Name,
@@ -307,7 +307,7 @@ namespace Todo.Controllers
             IsComplete = todoItem.IsComplete
         };
 
-        private static TodoItemUpdateDto ItemToUpdateDto(TodoItem todoItem) => new TodoItemUpdateDto
+        private static TodoItemUpdateDto ItemToUpdateDto(TodoItem todoItem) => new()
         {
             Name = todoItem.Name,
             Project = todoItem.Project,
@@ -316,7 +316,7 @@ namespace Todo.Controllers
             IsComplete = todoItem.IsComplete
         };
 
-        private static TodoItem DtoToItem(TodoItemManipulationDto dto) => new TodoItem
+        private static TodoItem DtoToItem(TodoItemManipulationDto dto) => new()
         {
             Name = dto.Name,
             Project = dto.Project,
@@ -337,15 +337,15 @@ namespace Todo.Controllers
 
         private IEnumerable<LinkDto> CreateTodoItemLinks(Guid id, string fields = null) => new List<LinkDto>
         {
-            new LinkDto(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), "self", Get),
-            new LinkDto(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", Put),
-            new LinkDto(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", Patch),
-            new LinkDto(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
+            new(Url.Link(nameof(GetTodoItemAsync), new { id, fields }), "self", Get),
+            new(Url.Link(nameof(PutTodoItemAsync), new { id }), "put-todoitem", Put),
+            new(Url.Link(nameof(PatchTodoItemAsync), new { id }), "patch-todoitem", Patch),
+            new(Url.Link(nameof(DeleteTodoItemAsync), new { id }), "delete-todoitem", Delete)
         };
 
         private IEnumerable<LinkDto> CreateTodoItemsLinks(TodoItemParameters parameters, bool hasPrevious, bool hasNext)
         {
-            var linkDtos = new List<LinkDto> { new LinkDto(CreateTodoItemsUri(Current), "self", Get) };
+            List<LinkDto> linkDtos = new() { new LinkDto(CreateTodoItemsUri(Current), "self", Get) };
 
             if (hasPrevious)
                 linkDtos.Add(new LinkDto(CreateTodoItemsUri(PreviousPage), "previous-page", Get));

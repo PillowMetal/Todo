@@ -4,6 +4,17 @@ root = true
 # C# files
 [*.cs]
 
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
 #### .NET Coding Conventions ####
 
 # Organize usings
@@ -28,7 +39,7 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:warning
 
 # Modifier preferences
-dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 
 # Expression-level preferences
 dotnet_style_coalesce_expression = true:warning
@@ -54,7 +65,7 @@ dotnet_style_readonly_field = true:warning
 dotnet_code_quality_unused_parameters = all:warning
 
 # Suppression preferences
-dotnet_remove_unnecessary_suppression_exclusions = none
+dotnet_remove_unnecessary_suppression_exclusions = warning
 
 #### C# Coding Conventions ####
 
@@ -85,7 +96,7 @@ csharp_style_conditional_delegate_call = true:warning
 
 # Modifier preferences
 csharp_prefer_static_local_function = true:warning
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 
 # Code-block preferences
 csharp_prefer_braces = false:warning
@@ -94,6 +105,7 @@ csharp_prefer_simple_using_statement = true:warning
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true:warning
 csharp_style_deconstructed_variable_declaration = true:warning
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
 csharp_style_inlined_variable_declaration = true:warning
 csharp_style_pattern_local_over_anonymous_function = true:warning
 csharp_style_prefer_index_operator = true:warning
@@ -201,25 +213,6 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix = 
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
-
-#### Manually added diagnostic supressions ####
-
-# Remove unnecessary suppressions
-dotnet_remove_unnecessary_suppression_exclusions = category: ReSharper
-# Missing default case
-dotnet_diagnostic.ide0010.severity = none
-# Catch of general exception type
-dotnet_diagnostic.ca1031.severity = none
-# Validate parameter as non-null
-dotnet_diagnostic.ca1062.severity = none
-# Passing literal as localized parameter
-dotnet_diagnostic.ca1303.severity = none
-# Identifier contains underscores
-dotnet_diagnostic.ca1707.severity = none
-# Consider awaiting task
-dotnet_diagnostic.ca2007.severity = none
-# Collection properties should be read only
-dotnet_diagnostic.ca2227.severity = none
 
 [*.proto]
 indent_style = tab
@@ -369,7 +362,6 @@ resharper_arrange_static_member_qualifier_highlighting = warning
 resharper_arrange_trailing_comma_in_multiline_lists_highlighting = warning
 resharper_arrange_trailing_comma_in_singleline_lists_highlighting = warning
 resharper_arrange_var_keywords_in_deconstructing_declaration_highlighting = warning
-resharper_assignment_is_fully_discarded_highlighting = warning
 resharper_auto_property_can_be_made_get_only_global_highlighting = warning
 resharper_auto_property_can_be_made_get_only_local_highlighting = warning
 resharper_bad_attribute_brackets_spaces_highlighting = warning
@@ -399,7 +391,6 @@ resharper_check_for_reference_equality_instead_1_highlighting = warning
 resharper_check_for_reference_equality_instead_2_highlighting = warning
 resharper_check_for_reference_equality_instead_3_highlighting = warning
 resharper_check_for_reference_equality_instead_4_highlighting = warning
-resharper_class_can_be_sealed_global_highlighting = warning
 resharper_class_can_be_sealed_local_highlighting = warning
 resharper_class_never_instantiated_global_highlighting = warning
 resharper_class_never_instantiated_local_highlighting = warning
@@ -437,6 +428,7 @@ resharper_css_obsolete_highlighting = warning
 resharper_declaration_hides_highlighting = warning
 resharper_dl_tag_contains_non_dt_or_dd_elements_highlighting = warning
 resharper_double_colons_preferred_highlighting = warning
+resharper_double_negation_in_pattern_highlighting = warning
 resharper_double_negation_operator_highlighting = warning
 resharper_empty_title_tag_highlighting = warning
 resharper_event_never_invoked_global_highlighting = warning
@@ -452,6 +444,7 @@ resharper_html_attributes_quotes_highlighting = warning
 resharper_incorrect_blank_lines_near_braces_highlighting = warning
 resharper_inheritdoc_consider_usage_highlighting = warning
 resharper_inline_out_variable_declaration_highlighting = warning
+resharper_inline_temporary_variable_highlighting = warning
 resharper_internal_or_private_member_not_documented_highlighting = warning
 resharper_introduce_optional_parameters_global_highlighting = warning
 resharper_introduce_optional_parameters_local_highlighting = warning
@@ -466,21 +459,23 @@ resharper_join_null_check_with_usage_when_possible_highlighting = warning
 resharper_local_function_can_be_made_static_highlighting = warning
 resharper_loop_can_be_converted_to_query_highlighting = warning
 resharper_loop_can_be_partly_converted_to_query_highlighting = warning
-resharper_member_can_be_internal_highlighting = warning
 resharper_member_can_be_made_static_global_highlighting = warning
 resharper_member_can_be_made_static_local_highlighting = warning
 resharper_member_can_be_private_global_highlighting = warning
 resharper_member_can_be_private_local_highlighting = warning
 resharper_member_can_be_protected_global_highlighting = warning
 resharper_member_can_be_protected_local_highlighting = warning
+resharper_merge_and_pattern_highlighting = warning
 resharper_merge_cast_with_type_check_highlighting = warning
 resharper_merge_conditional_expression_highlighting = warning
 resharper_merge_conditional_expression_when_possible_highlighting = warning
+resharper_merge_into_logical_pattern_highlighting = warning
+resharper_merge_into_negated_pattern_highlighting = warning
+resharper_merge_into_pattern_highlighting = warning
 resharper_merge_sequential_checks_highlighting = warning
 resharper_merge_sequential_checks_when_possible_highlighting = warning
-resharper_merge_sequential_patterns_highlighting = warning
-resharper_method_has_async_overload_highlighting = hint
-resharper_method_has_async_overload_with_cancellation_highlighting = hint
+resharper_method_has_async_overload_highlighting = warning
+resharper_method_has_async_overload_with_cancellation_highlighting = warning
 resharper_method_supports_cancellation_highlighting = warning
 resharper_missing_alt_attribute_in_img_tag_highlighting = warning
 resharper_missing_blank_lines_highlighting = hint
@@ -492,8 +487,7 @@ resharper_more_specific_foreach_variable_type_available_highlighting = warning
 resharper_multiple_spaces_highlighting = warning
 resharper_multiple_statements_on_one_line_highlighting = warning
 resharper_multiple_type_members_on_one_line_highlighting = warning
-resharper_mvc_action_not_resolved_highlighting = none
-resharper_mvc_view_not_resolved_highlighting = none
+resharper_negation_of_relational_pattern_highlighting = warning
 resharper_negative_equality_expression_highlighting = warning
 resharper_nested_string_interpolation_highlighting = warning
 resharper_not_accessed_field_global_highlighting = warning
@@ -508,13 +502,13 @@ resharper_possibly_unassigned_property_highlighting = none
 resharper_property_can_be_made_init_only_global_highlighting = warning
 resharper_property_can_be_made_init_only_local_highlighting = warning
 resharper_public_constructor_in_abstract_class_highlighting = warning
+resharper_redundant_always_match_subpattern_highlighting = warning
 resharper_redundant_array_creation_expression_highlighting = warning
 resharper_redundant_attribute_parentheses_highlighting = warning
 resharper_redundant_attribute_usage_property_highlighting = warning
 resharper_redundant_blank_lines_highlighting = warning
 resharper_redundant_collection_initializer_element_braces_highlighting = warning
 resharper_redundant_declaration_semicolon_highlighting = warning
-resharper_redundant_discarded_pattern_highlighting = warning
 resharper_redundant_discard_designation_highlighting = warning
 resharper_redundant_empty_object_creation_argument_list_highlighting = warning
 resharper_redundant_explicit_params_array_creation_highlighting = warning
@@ -522,12 +516,14 @@ resharper_redundant_fixed_pointer_declaration_highlighting = warning
 resharper_redundant_if_else_block_highlighting = warning
 resharper_redundant_immediate_delegate_invocation_highlighting = warning
 resharper_redundant_intermediate_variable_highlighting = warning
+resharper_redundant_is_before_relational_pattern_highlighting = warning
 resharper_redundant_lambda_signature_parentheses_highlighting = warning
 resharper_redundant_linebreak_highlighting = hint
 resharper_redundant_local_class_name_highlighting = warning
 resharper_redundant_local_function_name_highlighting = warning
 resharper_redundant_overload_global_highlighting = warning
 resharper_redundant_overload_local_highlighting = warning
+resharper_redundant_pattern_parentheses_highlighting = warning
 resharper_redundant_property_pattern_clause_highlighting = warning
 resharper_redundant_query_order_by_ascending_keyword_highlighting = warning
 resharper_redundant_range_bound_highlighting = warning
@@ -543,8 +539,12 @@ resharper_remove_redundant_or_statement_false_highlighting = warning
 resharper_remove_redundant_or_statement_true_highlighting = warning
 resharper_remove_to_list_1_highlighting = warning
 resharper_remove_to_list_2_highlighting = warning
+resharper_replace_auto_property_with_computed_property_highlighting = warning
 resharper_replace_indicing_with_array_destructuring_highlighting = warning
 resharper_replace_indicing_with_short_hand_properties_after_destructuring_highlighting = warning
+resharper_replace_object_pattern_with_var_pattern_highlighting = warning
+resharper_replace_slice_with_range_indexer_highlighting = warning
+resharper_replace_substring_with_range_indexer_highlighting = warning
 resharper_replace_undefined_checking_series_with_object_destructuring_highlighting = warning
 resharper_replace_with_destructuring_swap_highlighting = warning
 resharper_replace_with_first_or_default_1_highlighting = warning
@@ -631,7 +631,7 @@ resharper_unassigned_field_global_highlighting = warning
 resharper_unknown_css_vendor_extension_highlighting = warning
 resharper_unnecessary_whitespace_highlighting = warning
 resharper_unused_inherited_parameter_highlighting = warning
-resharper_unused_member_global_highlighting = none
+resharper_unused_member_global_highlighting = warning
 resharper_unused_member_hierarchy_global_highlighting = warning
 resharper_unused_member_in_super_global_highlighting = warning
 resharper_unused_method_return_value_global_highlighting = warning
@@ -658,11 +658,13 @@ resharper_use_method_any_4_highlighting = warning
 resharper_use_method_is_instance_of_type_highlighting = warning
 resharper_use_nameof_expression_highlighting = warning
 resharper_use_name_of_instead_of_type_of_highlighting = warning
+resharper_use_negated_pattern_in_is_expression_highlighting = warning
 resharper_use_negated_pattern_matching_highlighting = warning
 resharper_use_null_propagation_highlighting = warning
 resharper_use_null_propagation_when_possible_highlighting = warning
 resharper_use_object_or_collection_initializer_highlighting = warning
 resharper_use_pattern_matching_highlighting = warning
+resharper_use_positional_deconstruction_pattern_highlighting = warning
 resharper_use_string_interpolation_highlighting = warning
 resharper_use_switch_case_pattern_variable_highlighting = warning
 resharper_use_verbatim_string_highlighting = warning
@@ -681,3 +683,69 @@ resharper_wrong_metadata_use_highlighting = warning
 end_of_line=crlf
 insert_final_newline=true
 trim_trailing_whitespace=true
+
+#### Manually added suppressions for application specific files ####
+
+[**.cs]
+# Enable style warnings on build
+dotnet_analyzer_diagnostic.category-style.severity = warning
+# Remove unnecessary suppression
+dotnet_remove_unnecessary_suppression_exclusions = category: ReSharper
+# Convert to tuple
+dotnet_diagnostic.ide0050.severity = silent
+# Add missing cases
+dotnet_diagnostic.ide0072.severity = silent
+# Add default case
+dotnet_diagnostic.ide0010.severity = silent
+# Do not catch general exception types
+dotnet_diagnostic.ca1031.severity = none
+# Validate arguments of public methods
+dotnet_diagnostic.ca1062.severity = none
+# Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.ca2007.severity = silent
+# Collection properties should be read only
+dotnet_diagnostic.ca2227.severity = none
+
+[Api/Todo/Startup.cs]
+# Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
+dotnet_diagnostic.asp0000.severity = none
+# Remove unread private members
+dotnet_diagnostic.ide0052.severity = none
+resharper_unused_auto_property_accessor_local_highlighting = none
+
+[Api/Todo/Contexts/TodoContext.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Entities/TodoItem.cs]
+resharper_property_can_be_made_init_only_global_highlighting = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Filters/ApiParameterFilter.cs]
+resharper_class_never_instantiated_global_highlighting = none
+
+[Api/Todo/Helpers/QueryableExtensions.cs]
+# Avoid dead conditional code
+dotnet_diagnostic.ca1508.severity = none
+
+[Api/Todo/Helpers/StringExtensions.cs]
+# Normalize strings to uppercase
+dotnet_diagnostic.ca1308.severity = none
+
+[Api/Todo/Models/**.cs]
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[Api/Todo/Models/LinkDto.cs]
+resharper_member_can_be_private_global_highlighting = none
+resharper_unused_member_global_highlighting = none
+
+[Api/Todo/Parameters/TodoItemParameters.cs]
+resharper_auto_property_can_be_made_get_only_global_highlighting = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+resharper_unused_member_global_highlighting = none
+
+[Api/Todo/Services/IPropertyMapping.cs]
+# Avoid empty interfaces
+dotnet_diagnostic.ca1040.severity = none
+
+[Api/Todo/Services/PropertyMapping.cs]
+resharper_unused_type_parameter_highlighting = none

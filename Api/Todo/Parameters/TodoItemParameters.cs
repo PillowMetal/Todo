@@ -3,13 +3,13 @@ namespace Todo.Parameters
     public class TodoItemParameters
     {
         private const int MaximumPageSize = 10;
-        private int _pageSize = 4;
+        private readonly int _pageSize = 4;
 
-        public string IsComplete { get; set; }
-        public string SearchQuery { get; set; }
-        public string OrderBy { get; set; } = "tags";
-        public int PageSize { get => _pageSize; set => _pageSize = value > MaximumPageSize ? MaximumPageSize : value; }
-        public int PageNumber { get; set; } = 1;
-        public string Fields { get; set; }
+        public string IsComplete { get; init; }
+        public string SearchQuery { get; init; }
+        public string OrderBy { get; init; } = "tags";
+        public int PageSize { get => _pageSize; init => _pageSize = value > MaximumPageSize ? MaximumPageSize : value; }
+        public int PageNumber { get; init; } = 1;
+        public string Fields { get; init; }
     }
 }

@@ -7,11 +7,11 @@ using static System.String;
 
 namespace Todo.Helpers
 {
-    public static class IEnumerableExtensions
+    public static class EnumerableExtensions
     {
         public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields, string keys = null)
         {
-            var propertyInfos = new List<PropertyInfo>();
+            List<PropertyInfo> propertyInfos = new();
 
             if (IsNullOrWhiteSpace(fields))
                 propertyInfos.AddRange(typeof(T).GetProperties(Public | Instance));
@@ -24,11 +24,11 @@ namespace Todo.Helpers
                 propertyInfos = propertyInfos.Distinct().ToList();
             }
 
-            var expandoObjects = new List<ExpandoObject>();
+            List<ExpandoObject> expandoObjects = new();
 
             foreach (T sourceObject in source)
             {
-                var expandoObject = new ExpandoObject();
+                ExpandoObject expandoObject = new();
 
                 foreach (PropertyInfo propertyInfo in propertyInfos)
                     _ = expandoObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(sourceObject));

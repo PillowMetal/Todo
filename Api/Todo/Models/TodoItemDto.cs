@@ -4,10 +4,10 @@ namespace Todo.Models
 {
     public class TodoItemDto
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Tags { get; set; }
-        public int Age { get; set; }
-        public bool IsComplete { get; set; }
+        public Guid Id { get; init; }
+        public string Name { get; init; }
+        public string Tags { get; init; }
+        public int Age { get; init; }
+        public bool IsComplete { get; init; }
     }
 }

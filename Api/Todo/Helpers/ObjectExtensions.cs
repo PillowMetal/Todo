@@ -11,7 +11,7 @@ namespace Todo.Helpers
     {
         public static ExpandoObject ShapeData<T>(this T source, string fields = null, string keys = null)
         {
-            var expandoObject = new ExpandoObject();
+            ExpandoObject expandoObject = new();
 
             if (IsNullOrWhiteSpace(fields))
                 foreach (PropertyInfo propertyInfo in typeof(T).GetProperties(Public | Instance))
