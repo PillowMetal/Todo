@@ -1,5 +1,5 @@
 # Todo
-Sample .NET Core 3 API to manage a list of to do items.
+Sample .NET 5 Web API to manage a list of to do items.
 
 This implementation satisfies all REST constraints as well as Richardson Maturity Model level 3, and provides examples of OPTIONS, HEAD, GET, POST, PUT, PATCH, and DELETE. All wirite methods also support "upserting".
 
@@ -15,3 +15,4 @@ In addition is uses proper identification of resources and methods, an outer fac
 7. Content negotiation for outer facing data or underlying data via custom media type, with or without HATEOAS links
 8. Caching at the server level
 9. Compression support for both Gzip and Brotli
+
