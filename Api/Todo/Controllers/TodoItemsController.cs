@@ -118,7 +118,7 @@ namespace Todo.Controllers
             return Ok(expandoObjects);
         }
 
-        [HttpGet("{id}", Name = nameof(GetTodoItemAsync))]
+        [HttpGet("{id:guid}", Name = nameof(GetTodoItemAsync))]
         [ProducesResponseType(Status200OK, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
@@ -170,7 +170,7 @@ namespace Todo.Controllers
             return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
         }
 
-        [HttpPut("{id}", Name = nameof(PutTodoItemAsync))]
+        [HttpPut("{id:guid}", Name = nameof(PutTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status400BadRequest)]
@@ -214,7 +214,7 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}", Name = nameof(PatchTodoItemAsync))]
+        [HttpPatch("{id:guid}", Name = nameof(PatchTodoItemAsync))]
         [ProducesResponseType(Status201Created, Type = typeof(TodoItemDto))]
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status400BadRequest)]
@@ -270,7 +270,7 @@ namespace Todo.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}", Name = nameof(DeleteTodoItemAsync))]
+        [HttpDelete("{id:guid}", Name = nameof(DeleteTodoItemAsync))]
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status404NotFound)]
         public async Task<IActionResult> DeleteTodoItemAsync(Guid id, CancellationToken token)
