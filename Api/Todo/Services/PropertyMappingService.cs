@@ -24,22 +24,14 @@ namespace Todo.Services
 
         public PropertyMappingService() => _propertyMappings.Add(new PropertyMapping<TodoItemDto, TodoItem>(_todoItemPropertyMapping));
 
-        public IDictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
+        public IReadOnlyDictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>() => _propertyMappings
             .OfType<PropertyMapping<TSource, TDestination>>().Single().MappingDictionary;
 
-        public bool IsValidMapping<TSource, TDestination>(string orderBy)
-        {
-            if (IsNullOrWhiteSpace(orderBy))
-                return true;
-
-            IDictionary<string, PropertyMappingValue> propertyMapping = GetPropertyMapping<TSource, TDestination>();
-
-            return orderBy.Split(',')
-                .Select(clause => clause.Trim())
-                .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.OrdinalIgnoreCase) })
-                .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
-                .All(propertyName => propertyMapping.ContainsKey(propertyName));
-        }
+        public bool IsValidMapping<TSource, TDestination>(string orderBy) => IsNullOrWhiteSpace(orderBy) || orderBy.Split(',')
+            .Select(clause => clause.Trim())
+            .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.OrdinalIgnoreCase) })
+            .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
+            .All(propertyName => GetPropertyMapping<TSource, TDestination>().ContainsKey(propertyName));
 
         public bool HasProperties<T>(string fields) => IsNullOrWhiteSpace(fields) || fields
             .Split(',').All(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);

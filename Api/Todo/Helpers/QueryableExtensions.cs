@@ -9,12 +9,12 @@ namespace Todo.Helpers
 {
     public static class QueryableExtensions
     {
-        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, IDictionary<string, PropertyMappingValue> propertyMapping)
+        public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, IReadOnlyDictionary<string, PropertyMappingValue> propertyMapping)
         {
             if (IsNullOrWhiteSpace(orderBy))
                 return source;
 
-            string orderByString = Empty;
+            string orderByString = null;
 
             foreach (string clause in orderBy.Split(','))
             {

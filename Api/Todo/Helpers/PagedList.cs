@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using static System.Text.Encodings.Web.JavaScriptEncoder;
 using static System.Text.Json.JsonNamingPolicy;
+using static System.Text.Json.JsonSerializer;
 
 namespace Todo.Helpers
 {
@@ -36,7 +37,7 @@ namespace Todo.Helpers
 
         #region Methods
 
-        public void CreatePaginationHeader(HttpResponse response) => response.Headers.Add("X-Pagination", JsonSerializer.Serialize(new
+        public void CreatePaginationHeader(HttpResponse response) => response.Headers.Add("X-Pagination", Serialize(new
         {
             TotalCount,
             PageSize,
