@@ -124,10 +124,10 @@ namespace Todo.Controllers
         [ProducesResponseType(Status404NotFound)]
         public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
-            bool isFullRequest = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase);
+            bool isFullRequest = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase));
 
             if (isFullRequest && !_service.HasProperties<TodoItemFullDto>(fields) || !isFullRequest && !_service.HasProperties<TodoItemDto>(fields))
                 return BadRequest();
@@ -141,7 +141,7 @@ namespace Todo.Controllers
                 ItemToFullDto(todoItem).ShapeData(fields, "id") :
                 ItemToDto(todoItem).ShapeData(fields, "id");
 
-            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+            if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
                 _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"], fields));
 
             return expandoObject;
@@ -153,18 +153,18 @@ namespace Todo.Controllers
         [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = DtoToItem(dto);
             _ = _context.TodoItems.Add(todoItem);
             _ = await _context.SaveChangesAsync(token);
 
-            ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+            ExpandoObject expandoObject = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase)) ?
                 ItemToFullDto(todoItem).ShapeData() :
                 ItemToDto(todoItem).ShapeData();
 
-            if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+            if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
                 _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
             return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
@@ -178,7 +178,7 @@ namespace Todo.Controllers
         [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
@@ -190,11 +190,11 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync(token);
 
-                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                ExpandoObject expandoObject = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase)) ?
                     ItemToFullDto(todoItem).ShapeData() :
                     ItemToDto(todoItem).ShapeData();
 
-                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
                     _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
@@ -222,7 +222,7 @@ namespace Todo.Controllers
         [Consumes("application/json-patch+json")]
         public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue headerValue))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
@@ -240,11 +240,11 @@ namespace Todo.Controllers
                 _ = _context.TodoItems.Add(todoItem);
                 _ = await _context.SaveChangesAsync(token);
 
-                ExpandoObject expandoObject = headerValue.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase) ?
+                ExpandoObject expandoObject = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase)) ?
                     ItemToFullDto(todoItem).ShapeData() :
                     ItemToDto(todoItem).ShapeData();
 
-                if (headerValue.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase))
+                if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
                     _ = expandoObject.TryAdd("links", CreateTodoItemLinks((Guid)((IDictionary<string, object>)expandoObject)["id"]));
 
                 return CreatedAtRoute(nameof(GetTodoItemAsync), new { id = ((IDictionary<string, object>)expandoObject)["id"] }, expandoObject);
