@@ -19,7 +19,7 @@ namespace Todo.Helpers
             else
             {
                 if (!IsNullOrWhiteSpace(keys))
-                    foreach (PropertyInfo propertyInfo in keys.Split(",").Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)))
+                    foreach (PropertyInfo propertyInfo in keys.Split(',').Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)))
                         _ = expandoObject.TryAdd((propertyInfo?.Name).ToLowerFirstChar(), propertyInfo?.GetValue(source));
 
                 foreach (PropertyInfo propertyInfo in fields.Split(',').Select(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)))
