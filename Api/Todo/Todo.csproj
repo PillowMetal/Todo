@@ -1,6 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <AssemblyName>Todo</AssemblyName>
+    <UserSecretsId>Todo</UserSecretsId>
+    <Company>Cancuck Software</Company>
+    <Product>Todo Item Web Api</Product>
+    <Version>6.0.3</Version>
+    <Copyright>2021</Copyright>
+    <PackageId>Todo</PackageId>
+    <Authors>Steve Swayne</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RuntimeFrameworkVersion>5.0.6</RuntimeFrameworkVersion>
     <LangVersion>9</LangVersion>
@@ -13,6 +24,24 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <TieredCompilation>true</TieredCompilation>
+    <TieredCompilationQuickJit>true</TieredCompilationQuickJit>
+    <TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
+    <OutputType>Exe</OutputType>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
