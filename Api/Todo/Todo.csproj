@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RuntimeFrameworkVersion>5.0.5</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>5.0.6</RuntimeFrameworkVersion>
     <LangVersion>9</LangVersion>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -17,15 +17,15 @@
 
   <ItemGroup>
     <PackageReference Include="Marvin.Cache.Headers" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" PrivateAssets="All" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.9" />
   </ItemGroup>
 
