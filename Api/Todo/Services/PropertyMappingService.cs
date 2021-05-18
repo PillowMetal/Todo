@@ -29,7 +29,7 @@ namespace Todo.Services
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy) => IsNullOrWhiteSpace(orderBy) || orderBy.Split(',')
             .Select(clause => clause.Trim())
-            .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.OrdinalIgnoreCase) })
+            .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.Ordinal) })
             .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
             .All(propertyName => GetPropertyMapping<TSource, TDestination>().ContainsKey(propertyName));
 
