@@ -20,7 +20,7 @@ namespace Todo.Helpers
             {
                 string trimmed = clause.Trim();
                 bool descending = trimmed.EndsWith(" desc", OrdinalIgnoreCase);
-                int index = trimmed.IndexOf(" ", OrdinalIgnoreCase);
+                int index = trimmed.IndexOf(" ", Ordinal);
                 string propertyName = index == -1 ? trimmed : trimmed.Remove(index);
 
                 foreach (string property in propertyMapping[propertyName].DestinationProperties)

@@ -66,7 +66,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status400BadRequest)]
         public ActionResult<IEnumerable<ExpandoObject>> GetTodoItems([FromQuery] TodoItemParameters parameters, [FromHeader(Name = "Accept")] string mediaType)
         {
-            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             if (!_service.IsValidMapping<TodoItemDto, TodoItem>(parameters.OrderBy))
@@ -124,7 +124,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status404NotFound)]
         public async Task<ActionResult<ExpandoObject>> GetTodoItemAsync(Guid id, string fields, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             bool isFullRequest = headerValues.Any(value => value.SubTypeWithoutSuffix.StartsWith("vnd.usbe.todoitem.full", OrdinalIgnoreCase));
@@ -153,7 +153,7 @@ namespace Todo.Controllers
         [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PostTodoItemAsync(TodoItemCreateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = DtoToItem(dto);
@@ -178,7 +178,7 @@ namespace Todo.Controllers
         [Consumes(Json, Xml)]
         public async Task<ActionResult<ExpandoObject>> PutTodoItemAsync(Guid id, TodoItemUpdateDto dto, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);
@@ -222,7 +222,7 @@ namespace Todo.Controllers
         [Consumes("application/json-patch+json")]
         public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
-            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(","), out IList<MediaTypeHeaderValue> headerValues))
+            if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
                 return BadRequest();
 
             TodoItem todoItem = await _context.TodoItems.FindAsync(new object[] { id }, token);

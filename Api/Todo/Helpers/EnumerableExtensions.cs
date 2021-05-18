@@ -18,7 +18,7 @@ namespace Todo.Helpers
             else
             {
                 if (!IsNullOrWhiteSpace(keys))
-                    propertyInfos.AddRange(keys.Split(",").Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)));
+                    propertyInfos.AddRange(keys.Split(',').Select(key => typeof(T).GetProperty(key.Trim(), Public | Instance | IgnoreCase)));
 
                 propertyInfos.AddRange(fields.Split(',').Select(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase)));
                 propertyInfos = propertyInfos.Distinct().ToList();
