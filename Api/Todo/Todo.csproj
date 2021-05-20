@@ -15,6 +15,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RuntimeFrameworkVersion>5.0.6</RuntimeFrameworkVersion>
     <LangVersion>9</LangVersion>
+    <Nullable>warnings</Nullable>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>5.0</AnalysisLevel>
