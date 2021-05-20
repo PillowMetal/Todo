@@ -5,7 +5,7 @@
     <UserSecretsId>Todo</UserSecretsId>
     <Company>Cancuck Software</Company>
     <Product>Todo Item Web Api</Product>
-    <Version>6.0.3</Version>
+    <Version>6.0.4</Version>
     <Copyright>2021</Copyright>
     <PackageId>Todo</PackageId>
     <Authors>Steve Swayne</Authors>
