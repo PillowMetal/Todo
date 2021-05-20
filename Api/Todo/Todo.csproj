@@ -25,24 +25,26 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <IsPackable>true</IsPackable>
     <TieredCompilation>true</TieredCompilation>
     <TieredCompilationQuickJit>true</TieredCompilationQuickJit>
     <TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
     <OutputType>Exe</OutputType>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <Optimize>false</Optimize>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
+    <PreserveCompilationContext>false</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
