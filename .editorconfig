@@ -45,6 +45,7 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_collection_initializer = true:warning
 dotnet_style_explicit_tuple_names = true:warning
+dotnet_style_namespace_match_folder = true
 dotnet_style_null_propagation = true:warning
 dotnet_style_object_initializer = true:warning
 dotnet_style_operator_placement_when_wrapping = end_of_line
@@ -66,6 +67,10 @@ dotnet_code_quality_unused_parameters = all:warning
 
 # Suppression preferences
 dotnet_remove_unnecessary_suppression_exclusions = warning
+
+# New line preferences
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+dotnet_style_allow_statement_immediately_after_block_experimental = false:warning
 
 #### C# Coding Conventions ####
 
@@ -116,6 +121,11 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:war
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:warning
+
+# New line preferences
+csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = false:warning
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:warning
+csharp_style_allow_embedded_statements_on_same_line_experimental = false:warning
 
 #### C# Formatting Rules ####
 
@@ -397,6 +407,7 @@ resharper_class_never_instantiated_local_highlighting = warning
 resharper_class_with_virtual_members_never_inherited_global_highlighting = warning
 resharper_class_with_virtual_members_never_inherited_local_highlighting = warning
 resharper_coerced_equals_using_with_null_undefined_highlighting = warning
+resharper_comment_typo_highlighting = none
 resharper_compare_non_constrained_generic_with_null_highlighting = warning
 resharper_convert_closure_to_method_group_highlighting = warning
 resharper_convert_conditional_ternary_expression_to_switch_expression_highlighting = warning
@@ -441,6 +452,7 @@ resharper_foreach_can_be_partly_converted_to_query_using_another_get_enumerator_
 resharper_for_can_be_converted_to_foreach_highlighting = warning
 resharper_function_complexity_overflow_highlighting = warning
 resharper_html_attributes_quotes_highlighting = warning
+resharper_identifier_typo_highlighting = none
 resharper_incorrect_blank_lines_near_braces_highlighting = warning
 resharper_inheritdoc_consider_usage_highlighting = warning
 resharper_inline_out_variable_declaration_highlighting = warning
@@ -612,6 +624,7 @@ resharper_specify_string_comparison_highlighting = warning
 resharper_string_concatenation_to_template_string_highlighting = warning
 resharper_string_ends_with_is_culture_specific_highlighting = warning
 resharper_string_literal_as_interpolation_argument_highlighting = warning
+resharper_string_literal_typo_highlighting = none
 resharper_string_literal_wrong_quotes_highlighting = warning
 resharper_string_starts_with_is_culture_specific_highlighting = warning
 resharper_struct_can_be_made_read_only_highlighting = warning
