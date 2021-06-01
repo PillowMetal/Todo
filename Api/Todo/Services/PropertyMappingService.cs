@@ -13,11 +13,11 @@ namespace Todo.Services
     {
         private readonly Dictionary<string, PropertyMappingValue> _todoItemPropertyMapping = new(OrdinalIgnoreCase)
         {
-            { "Id", new PropertyMappingValue(new List<string> { "Id" }) },
-            { "Name", new PropertyMappingValue(new List<string> { "Name" }) },
-            { "Tags", new PropertyMappingValue(new List<string> { "Project", "Context" }) },
-            { "Age", new PropertyMappingValue(new List<string> { "Date" }, true) },
-            { "IsComplete", new PropertyMappingValue(new List<string> { "IsComplete" }) }
+            { "Id", new PropertyMappingValue(new[] { "Id" }) },
+            { "Name", new PropertyMappingValue(new[] { "Name" }) },
+            { "Tags", new PropertyMappingValue(new[] { "Project", "Context" }) },
+            { "Age", new PropertyMappingValue(new[] { "Date" }, true) },
+            { "IsComplete", new PropertyMappingValue(new[] { "IsComplete" }) }
         };
 
         private readonly List<IPropertyMapping> _propertyMappings = new();

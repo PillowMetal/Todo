@@ -24,7 +24,7 @@ namespace Todo.Controllers
         [HttpHead]
         [HttpGet(Name = nameof(GetApi))]
         [ProducesResponseType(Status200OK)]
-        public ActionResult<IEnumerable<LinkDto>> GetApi() => new List<LinkDto>
+        public ActionResult<IEnumerable<LinkDto>> GetApi() => new LinkDto[]
         {
             new(Url.Link(nameof(GetApi), new { }), "self", Get),
             new(Url.Link(nameof(OptionsApi), new { }), "options-api", Options),
