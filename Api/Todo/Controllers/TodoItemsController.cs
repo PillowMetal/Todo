@@ -97,11 +97,11 @@ namespace Todo.Controllers
 
             PagedList<TodoItem> pagedList = new(queryable, parameters.PageSize, parameters.PageNumber);
 
-            pagedList.CreatePaginationHeader(Response);
-
             IEnumerable<ExpandoObject> expandoObjects = isFullRequest ?
-                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id").ToList() :
-                pagedList.Select(ItemToDto).ShapeData(parameters.Fields, "id").ToList();
+                pagedList.Select(ItemToFullDto).ShapeData(parameters.Fields, "id") :
+                pagedList.Select(ItemToDto).ShapeData(parameters.Fields, "id");
+
+            pagedList.CreatePaginationHeader(Response);
 
             if (headerValues.Any(value => value.SubTypeWithoutSuffix.EndsWith("hateoas", OrdinalIgnoreCase)))
             {
