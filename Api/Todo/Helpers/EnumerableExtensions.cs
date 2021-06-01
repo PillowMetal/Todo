@@ -9,7 +9,7 @@ namespace Todo.Helpers
 {
     public static class EnumerableExtensions
     {
-        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields, string keys = null)
+        public static IReadOnlyCollection<ExpandoObject> ShapeData<T>(this IEnumerable<T> source, string fields, string keys = null)
         {
             List<PropertyInfo> propertyInfos = new();
 
@@ -30,9 +30,7 @@ namespace Todo.Helpers
             {
                 ExpandoObject expandoObject = new();
 
-                foreach (PropertyInfo propertyInfo in propertyInfos)
-                    _ = expandoObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(sourceObject));
-
+                propertyInfos.ForEach(propertyInfo => expandoObject.TryAdd(propertyInfo.Name.ToLowerFirstChar(), propertyInfo.GetValue(sourceObject)));
                 expandoObjects.Add(expandoObject);
             }
 
