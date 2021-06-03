@@ -7,7 +7,7 @@ namespace Todo.Services
         public IEnumerable<string> DestinationProperties { get; }
         public bool Revert { get; }
 
-        public PropertyMappingValue(IEnumerable<string> properties, bool revert = false)
+        public PropertyMappingValue(IEnumerable<string> properties, bool revert = default)
         {
             DestinationProperties = properties;
             Revert = revert;
