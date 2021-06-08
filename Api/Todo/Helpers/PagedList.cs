@@ -11,18 +11,12 @@ namespace Todo.Helpers
 {
     public class PagedList<T> : List<T>
     {
-        #region Properties
-
         private int TotalCount { get; }
         private int PageSize { get; }
         private int TotalPages { get; }
         private int CurrentPage { get; }
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
-
-        #endregion
-
-        #region Constructors
 
         public PagedList(IQueryable<T> source, int pageSize, int pageNumber)
         {
@@ -32,10 +26,6 @@ namespace Todo.Helpers
             CurrentPage = pageNumber;
             AddRange(source.Skip((pageNumber - 1) * pageSize).Take(pageSize));
         }
-
-        #endregion
-
-        #region Methods
 
         public void CreatePaginationHeader(HttpResponse response) => response.Headers.Add("X-Pagination", Serialize(new
         {
@@ -48,7 +38,5 @@ namespace Todo.Helpers
             PropertyNamingPolicy = CamelCase,
             Encoder = UnsafeRelaxedJsonEscaping
         }));
-
-        #endregion
     }
 }
