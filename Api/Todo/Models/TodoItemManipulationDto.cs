@@ -15,14 +15,10 @@ namespace Todo.Models
         public DateTime Date { get; init; } = Today;
         public bool IsComplete { get; init; }
 
-        #region Implementation of IValidatableObject
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Project == Context)
                 yield return new ValidationResult("The provided project must be different than the context.", new[] { nameof(TodoItemManipulationDto) });
         }
-
-        #endregion
     }
 }

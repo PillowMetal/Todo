@@ -33,24 +33,14 @@ namespace Todo.Controllers
         "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
     public class TodoItemsController : ControllerBase
     {
-        #region Fields
-
         private readonly TodoContext _context;
         private readonly IPropertyMappingService _service;
-
-        #endregion
-
-        #region Constructors
 
         public TodoItemsController(TodoContext context, IPropertyMappingService service)
         {
             _context = context;
             _service = service;
         }
-
-        #endregion
-
-        #region Methods
 
         [HttpOptions(Name = nameof(OptionsTodoItems))]
         [ProducesResponseType(Status200OK)]
@@ -377,6 +367,4 @@ namespace Todo.Controllers
             }
         }
     }
-
-    #endregion
 }
