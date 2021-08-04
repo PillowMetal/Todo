@@ -8,8 +8,8 @@ namespace Todo.Filters
     public class ApiParameterFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context) => context.ApiDescription.ParameterDescriptions
-            .Where(description => description.ParameterDescriptor.BindingInfo.BindingSource?.Id == "Header")
-            .Where(description => description.ParameterDescriptor.BindingInfo.BinderModelName == "Accept")
+            .Where(static description => description.ParameterDescriptor.BindingInfo.BindingSource?.Id == "Header")
+            .Where(static description => description.ParameterDescriptor.BindingInfo.BinderModelName == "Accept")
             .ToList()
             .ForEach(description => operation.Parameters
                 .Remove(operation.Parameters.Single(parameter => parameter.Name.Equals(description.Name, OrdinalIgnoreCase))));

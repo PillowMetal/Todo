@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Todo</AssemblyName>
+    <AssemblyTitle>Todo .NET Runtime</AssemblyTitle>
     <UserSecretsId>Todo</UserSecretsId>
     <Company>Cancuck Software</Company>
     <Product>Todo Item Web Api</Product>
