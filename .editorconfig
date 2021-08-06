@@ -732,9 +732,9 @@ dotnet_diagnostic.ide0072.severity = silent
 # Add default case
 dotnet_diagnostic.ide0010.severity = silent
 # Do not catch general exception types
-dotnet_diagnostic.ca1031.severity = none
+dotnet_diagnostic.ca1031.severity = silent
 # Validate arguments of public methods
-dotnet_diagnostic.ca1062.severity = none
+dotnet_diagnostic.ca1062.severity = silent
 # Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.ca2007.severity = silent
 # Collection properties should be read only
