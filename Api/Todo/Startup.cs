@@ -33,12 +33,12 @@ namespace Todo
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            _ = services.AddDbContext<TodoContext>(options => options.UseInMemoryDatabase("Todo"));
+            _ = services.AddDbContext<TodoContext>(static options => options.UseInMemoryDatabase("Todo"));
 
             const string usbeHateoasMediaType = "application/vnd.usbe.hateoas+json";
 
             _ = services
-                .AddControllers(options =>
+                .AddControllers(static options =>
                 {
                     options.ReturnHttpNotAcceptable = true;
                     options.Filters.Add(new ProducesResponseTypeAttribute(Status400BadRequest));
@@ -53,7 +53,7 @@ namespace Todo
                 })
                 .AddXmlDataContractSerializerFormatters();
 
-            _ = services.AddResponseCompression(options =>
+            _ = services.AddResponseCompression(static options =>
             {
                 options.Providers.Add<BrotliCompressionProvider>();
                 options.Providers.Add<GzipCompressionProvider>();
@@ -68,13 +68,13 @@ namespace Todo
                 });
             });
 
-            _ = services.Configure<BrotliCompressionProviderOptions>(options => options.Level = Optimal);
-            _ = services.Configure<GzipCompressionProviderOptions>(options => options.Level = Optimal);
+            _ = services.Configure<BrotliCompressionProviderOptions>(static options => options.Level = Optimal);
+            _ = services.Configure<GzipCompressionProviderOptions>(static options => options.Level = Optimal);
 
             _ = services.AddResponseCaching();
-            _ = services.AddHttpCacheHeaders(options => options.MaxAge = 30, options => options.MustRevalidate = true);
+            _ = services.AddHttpCacheHeaders(static options => options.MaxAge = 30, static options => options.MustRevalidate = true);
 
-            _ = services.AddSwaggerGen(options =>
+            _ = services.AddSwaggerGen(static options =>
             {
                 options.SwaggerDoc(SwaggerEndpoint, new OpenApiInfo
                 {
@@ -105,7 +105,7 @@ namespace Todo
         {
             _ = env.IsDevelopment()
                 ? app.UseDeveloperExceptionPage()
-                : app.UseExceptionHandler(builder => builder.Run(async context =>
+                : app.UseExceptionHandler(static builder => builder.Run(static async context =>
                 {
                     context.Response.StatusCode = 500;
                     await context.Response.WriteAsync("An unexpected fault happened. Try again later.");
@@ -118,7 +118,7 @@ namespace Todo
 
             _ = app.UseSwagger();
 
-            _ = app.UseSwaggerUI(options =>
+            _ = app.UseSwaggerUI(static options =>
             {
                 options.SwaggerEndpoint($"swagger/{SwaggerEndpoint}/swagger.json", SwaggerTitle);
                 options.RoutePrefix = Empty;
@@ -134,7 +134,7 @@ namespace Todo
 
             _ = app.UseAuthorization();
 
-            _ = app.UseEndpoints(endpoints => endpoints.MapControllers());
+            _ = app.UseEndpoints(static endpoints => endpoints.MapControllers());
         }
     }
 }

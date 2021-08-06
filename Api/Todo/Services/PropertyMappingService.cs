@@ -28,12 +28,12 @@ namespace Todo.Services
             .OfType<PropertyMapping<TSource, TDestination>>().Single().MappingDictionary;
 
         public bool IsValidMapping<TSource, TDestination>(string orderBy) => IsNullOrWhiteSpace(orderBy) || orderBy.Split(',')
-            .Select(clause => clause.Trim())
-            .Select(trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.Ordinal) })
-            .Select(property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
+            .Select(static clause => clause.Trim())
+            .Select(static trimmed => new { trimmed, index = trimmed.IndexOf(" ", StringComparison.Ordinal) })
+            .Select(static property => property.index == -1 ? property.trimmed : property.trimmed.Remove(property.index))
             .All(propertyName => GetPropertyMapping<TSource, TDestination>().ContainsKey(propertyName));
 
         public bool HasProperties<T>(string fields) => IsNullOrWhiteSpace(fields) || fields
-            .Split(',').All(field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);
+            .Split(',').All(static field => typeof(T).GetProperty(field.Trim(), Public | Instance | IgnoreCase) != null);
     }
 }
