@@ -737,8 +737,11 @@ dotnet_diagnostic.ca1031.severity = silent
 dotnet_diagnostic.ca1062.severity = silent
 # Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.ca2007.severity = silent
-# Collection properties should be read only
-dotnet_diagnostic.ca2227.severity = none
+
+# Remove when this incorrect warning is fixed
+[Api/Todo/*.cs]
+# Namespace does not match folder structure
+dotnet_diagnostic.ide0130.severity = none
 
 [Api/Todo/Startup.cs]
 # Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
