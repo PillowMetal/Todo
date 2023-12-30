@@ -14,7 +14,7 @@ namespace Todo.Helpers
             if (IsNullOrWhiteSpace(orderBy))
                 return source;
 
-            string orderByString = null;
+            string orderByString = Empty;
 
             foreach (string clause in orderBy.Split(','))
             {
