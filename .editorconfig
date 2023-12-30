@@ -758,10 +758,12 @@ dotnet_diagnostic.ca1062.severity = silent
 # Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.ca2007.severity = silent
 
-# Remove when this incorrect warning is fixed
+# Remove when these incorrect warnings are fixed or later .NET versions used
 [Api/Todo/*.cs]
 # Namespace does not match folder structure
 dotnet_diagnostic.ide0130.severity = none
+[Api/Todo/Entities/TodoItem.cs]
+resharper_entity_framework_model_validation_unlimited_string_length_highlighting = none
 
 [Api/Todo/Startup.cs]
 # Do not call 'IServiceCollection.BuildServiceProvider' in 'ConfigureServices'
@@ -770,7 +772,7 @@ dotnet_diagnostic.asp0000.severity = none
 dotnet_diagnostic.ide0052.severity = none
 resharper_unused_auto_property_accessor_local_highlighting = none
 
-[Api/Todo/Contexts/TodoContext.cs]
+[Api/Todo/Contexts/TodoDbContext.cs]
 resharper_unused_auto_property_accessor_global_highlighting = none
 
 [Api/Todo/Entities/TodoItem.cs]
