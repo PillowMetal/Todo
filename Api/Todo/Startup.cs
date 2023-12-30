@@ -33,7 +33,7 @@ namespace Todo
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            _ = services.AddDbContext<TodoContext>(static options => options.UseInMemoryDatabase("Todo"));
+            _ = services.AddDbContext<TodoDbContext>(static options => options.UseInMemoryDatabase("Todo"));
 
             const string usbeHateoasMediaType = "application/vnd.usbe.hateoas+json";
 

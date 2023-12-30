@@ -14,6 +14,6 @@ namespace Todo.Entities
         public string Context { get; set; }
         public DateTime Date { get; set; }
         public bool IsComplete { get; set; }
-        public string Secret { get; set; }
+        public string Secret { get; init; }
     }
 }
