@@ -33,10 +33,10 @@ namespace Todo.Controllers
         "application/vnd.usbe.todoitem.friendly+json", "application/vnd.usbe.todoitem.friendly.hateoas+json")]
     public class TodoItemsController : ControllerBase
     {
-        private readonly TodoContext _context;
+        private readonly TodoDbContext _context;
         private readonly IPropertyMappingService _service;
 
-        public TodoItemsController(TodoContext context, IPropertyMappingService service)
+        public TodoItemsController(TodoDbContext context, IPropertyMappingService service)
         {
             _context = context;
             _service = service;
@@ -78,10 +78,10 @@ namespace Todo.Controllers
             }
 
             if (!IsNullOrWhiteSpace(parameters.SearchQuery))
-                queryable = queryable.Where(t =>
+                queryable = queryable.AsEnumerable().Where(t =>
                     (t.Name ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
                     (t.Context ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase) ||
-                    (t.Project ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase));
+                    (t.Project ?? Empty).Contains(parameters.SearchQuery.Trim(), OrdinalIgnoreCase)).AsQueryable();
 
             queryable = queryable.ApplySort(parameters.OrderBy, _service.GetPropertyMapping<TodoItemDto, TodoItem>());
 
@@ -209,7 +209,7 @@ namespace Todo.Controllers
         [ProducesResponseType(Status204NoContent)]
         [ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(Status404NotFound)]
-        [Consumes("application/json-patch+json")]
+        [Consumes("application/json-patch+json", "")]
         public async Task<ActionResult<ExpandoObject>> PatchTodoItemAsync(Guid id, JsonPatchDocument<TodoItemUpdateDto> document, [FromHeader(Name = "Accept")] string mediaType, CancellationToken token)
         {
             if (!MediaTypeHeaderValue.TryParseList((mediaType ?? "*/*").Split(','), out IList<MediaTypeHeaderValue> headerValues))
