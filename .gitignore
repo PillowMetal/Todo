@@ -301,7 +301,7 @@ node_modules/
 *.dsw
 *.dsp
 
-# Visual Studio 6 technical files 
+# Visual Studio 6 technical files
 *.ncb
 *.aps
 
@@ -360,6 +360,9 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Visual Studio History (VSHistory) files
+.vshistory/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
