@@ -135,7 +135,7 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:war
 csharp_using_directive_placement = outside_namespace:warning
 
 # New line preferences
-csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = false:warning
+csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:warning
 csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = true:warning
 csharp_style_allow_blank_line_after_token_in_conditional_expression_experimental = true:warning
 csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:warning
@@ -157,7 +157,7 @@ csharp_indent_block_contents = true
 csharp_indent_braces = false
 csharp_indent_case_contents = true
 csharp_indent_case_contents_when_block = false
-csharp_indent_labels = flush_left
+csharp_indent_labels = no_change
 csharp_indent_switch_labels = true
 
 # Space preferences
@@ -186,7 +186,7 @@ csharp_space_between_square_brackets = false
 
 # Wrapping preferences
 csharp_preserve_single_line_blocks = true
-csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_statements = false
 
 #### Naming styles ####
 
@@ -211,19 +211,19 @@ dotnet_naming_rule.class_should_be_pascal_case.style = pascal_case
 # Symbol specifications
 
 dotnet_naming_symbols.class.applicable_kinds = class
-dotnet_naming_symbols.class.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.class.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.class.required_modifiers = 
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
-dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.interface.required_modifiers = 
 
 dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
-dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.types.required_modifiers = 
 
 dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
-dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal
+dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
 # Naming styles
@@ -289,7 +289,9 @@ resharper_csharp_empty_block_style = together_same_line
 resharper_csharp_insert_final_newline = true
 resharper_csharp_keep_blank_lines_in_code = 1
 resharper_csharp_keep_blank_lines_in_declarations = 1
+resharper_csharp_max_enum_members_on_line = 10
 resharper_csharp_outdent_commas = true
+resharper_csharp_place_simple_declaration_blocks_on_single_line = true
 resharper_csharp_stick_comment = false
 resharper_csharp_wrap_lines = false
 resharper_csharp_wrap_multiple_declaration_style = wrap_if_long
@@ -326,7 +328,6 @@ resharper_keep_existing_switch_expression_arrangement = false
 resharper_linebreak_before_all_elements = true
 resharper_local_function_body = expression_body
 resharper_max_blank_lines_between_tags = 0
-resharper_max_enum_members_on_line = 10
 resharper_method_or_operator_body = expression_body
 resharper_min_blank_lines_after_imports = 1
 resharper_nested_ternary_style = simple_wrap
@@ -337,7 +338,6 @@ resharper_place_expr_accessor_on_single_line = true
 resharper_place_expr_method_on_single_line = true
 resharper_place_expr_property_on_single_line = true
 resharper_place_linq_into_on_new_line = false
-resharper_place_simple_declaration_blocks_on_single_line = true
 resharper_place_simple_embedded_statement_on_same_line = false
 resharper_prefer_qualified_reference = false
 resharper_prefer_separate_deconstructed_variables_declaration = true
@@ -574,6 +574,7 @@ resharper_redundant_space_highlighting = warning
 resharper_redundant_string_interpolation_highlighting = warning
 resharper_redundant_string_type_highlighting = warning
 resharper_redundant_to_string_call_for_value_type_highlighting = warning
+resharper_redundant_type_declaration_body_highlighting = warning
 resharper_redundant_verbatim_prefix_highlighting = warning
 resharper_redundant_verbatim_string_prefix_highlighting = warning
 resharper_redundant_with_expression_highlighting = warning
