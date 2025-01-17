@@ -15,6 +15,16 @@ tab_width = 4
 end_of_line = crlf
 insert_final_newline = false
 
+#### .NET Code Actions ####
+
+# Type members
+dotnet_hide_advanced_members = false
+dotnet_member_insertion_location = with_other_members_of_the_same_kind
+dotnet_property_generation_behavior = prefer_auto_properties
+
+# Symbol search
+dotnet_search_reference_assemblies = true
+
 #### .NET Coding Conventions ####
 
 # Organize usings
@@ -42,6 +52,7 @@ dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:w
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 
 # Expression-level preferences
+dotnet_prefer_system_hash_code = true:warning
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_collection_initializer = true:warning
 dotnet_style_explicit_tuple_names = true:warning
@@ -103,6 +114,7 @@ csharp_style_prefer_switch_expression = true:warning
 csharp_style_conditional_delegate_call = true:warning
 
 # Modifier preferences
+csharp_prefer_static_anonymous_function = true:warning
 csharp_prefer_static_local_function = true:warning
 csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async:warning
 csharp_style_prefer_readonly_struct = true:warning
@@ -111,6 +123,7 @@ csharp_style_prefer_readonly_struct_member = true:warning
 # Code-block preferences
 csharp_prefer_braces = false:warning
 csharp_prefer_simple_using_statement = true:warning
+csharp_prefer_system_threading_lock = true
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_prefer_method_group_conversion = true:warning
 csharp_style_prefer_primary_constructors = true:warning
@@ -243,7 +256,7 @@ indent_style = tab
 indent_size = tab
 tab_width = 4
 
-[*.{asax,ascx,aspx,axaml,c,c++,c++m,cc,ccm,cginc,compute,cp,cpp,cppm,cs,cshtml,cu,cuh,cxx,cxxm,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,htm,html,hxx,inc,inl,ino,ipp,ixx,js,jsx,master,mpp,mq4,mq5,mqh,mxx,paml,razor,skin,tpp,ts,tsx,usf,ush,vb,xaml,xamlx,xoml}]
+[*.{asax,ascx,aspx,axaml,blockshader,c,c++,c++m,cc,ccm,cginc,compute,cp,cpp,cppm,cs,cshtml,css,cu,cuh,cxx,cxxm,fx,fxh,h,h++,hh,hlsl,hlsli,hlslinc,hp,hpp,htm,html,hxx,icc,inc,inl,ino,ipp,ixx,js,jsx,master,mpp,mq4,mq5,mqh,mxx,paml,razor,shaderFoundry,skin,tcc,tpp,ts,tsx,urtshader,usf,ush,vb,xaml,xamlx,xoml}]
 indent_style = space
 indent_size = 4
 tab_width = 4
@@ -297,6 +310,8 @@ resharper_csharp_wrap_lines = false
 resharper_csharp_wrap_multiple_declaration_style = wrap_if_long
 resharper_csharp_wrap_multiple_type_parameter_constraints_style = wrap_if_long
 resharper_csharp_wrap_ternary_expr_style = wrap_if_long
+resharper_css_insert_final_newline = true
+resharper_css_keep_user_linebreaks = false
 resharper_enforce_line_ending_style = true
 resharper_force_control_statements_braces = always_remove
 resharper_html_attribute_style = on_single_line
@@ -411,11 +426,19 @@ resharper_bad_spaces_after_keyword_highlighting = warning
 resharper_bad_square_brackets_spaces_highlighting = warning
 resharper_bad_switch_braces_indent_highlighting = warning
 resharper_bad_symbol_spaces_highlighting = warning
+resharper_can_replace_cast_with_lambda_return_type_highlighting = warning
+resharper_can_replace_cast_with_shorter_type_argument_highlighting = warning
+resharper_can_replace_cast_with_type_argument_highlighting = warning
+resharper_can_replace_cast_with_variable_type_highlighting = warning
 resharper_can_simplify_dictionary_lookup_with_try_add_highlighting = warning
 resharper_can_simplify_dictionary_lookup_with_try_get_value_highlighting = warning
 resharper_can_simplify_dictionary_removing_with_single_call_highlighting = warning
 resharper_can_simplify_dictionary_try_get_value_with_get_value_or_default_highlighting = warning
+resharper_can_simplify_is_assignable_from_highlighting = warning
+resharper_can_simplify_is_instance_of_type_highlighting = warning
 resharper_can_simplify_set_adding_with_single_call_highlighting = warning
+resharper_can_simplify_string_escape_sequence_highlighting = warning
+resharper_change_field_type_to_system_threading_lock_highlighting = warning
 resharper_check_for_reference_equality_instead_1_highlighting = warning
 resharper_check_for_reference_equality_instead_2_highlighting = warning
 resharper_check_for_reference_equality_instead_3_highlighting = warning
@@ -452,9 +475,15 @@ resharper_convert_to_null_coalescing_compound_assignment_highlighting = warning
 resharper_convert_to_primary_constructor_highlighting = warning
 resharper_convert_to_static_class_highlighting = warning
 resharper_convert_to_using_declaration_highlighting = warning
+resharper_css_caniuse_feature_requires_prefix_highlighting = warning
+resharper_css_caniuse_unsupported_feature_highlighting = warning
+resharper_css_obsolete_highlighting = warning
 resharper_declaration_hides_highlighting = warning
+resharper_dl_tag_contains_non_dt_or_dd_elements_highlighting = warning
+resharper_double_colons_preferred_highlighting = warning
 resharper_double_negation_in_pattern_highlighting = warning
 resharper_double_negation_operator_highlighting = warning
+resharper_duplicated_switch_section_bodies_highlighting = warning
 resharper_empty_region_highlighting = warning
 resharper_empty_title_tag_highlighting = warning
 resharper_entity_framework_model_validation_circular_dependency_highlighting = warning
@@ -463,6 +492,7 @@ resharper_entity_framework_n_plus_one_query_highlighting = warning
 resharper_event_never_invoked_global_highlighting = warning
 resharper_event_never_subscribed_to_global_highlighting = warning
 resharper_event_never_subscribed_to_local_highlighting = warning
+resharper_extract_common_branching_code_highlighting = warning
 resharper_extract_common_property_pattern_highlighting = warning
 resharper_field_can_be_made_read_only_global_highlighting = warning
 resharper_field_can_be_made_read_only_local_highlighting = warning
@@ -515,6 +545,7 @@ resharper_missing_blank_lines_highlighting = hint
 resharper_missing_indent_highlighting = warning
 resharper_missing_linebreak_highlighting = warning
 resharper_missing_space_highlighting = warning
+resharper_missing_title_tag_highlighting = warning
 resharper_more_specific_foreach_variable_type_available_highlighting = warning
 resharper_move_local_function_after_jump_statement_highlighting = warning
 resharper_move_to_existing_positional_deconstruction_pattern_highlighting = warning
@@ -526,8 +557,10 @@ resharper_negation_of_relational_pattern_highlighting = warning
 resharper_negative_equality_expression_highlighting = warning
 resharper_nested_string_interpolation_highlighting = warning
 resharper_not_accessed_field_global_highlighting = warning
+resharper_not_disposed_resource_is_returned_highlighting = warning
 resharper_nullable_warning_suppression_is_used_highlighting = warning
 resharper_n_unit_attribute_produces_too_many_tests_highlighting = warning
+resharper_ol_tag_contains_non_li_elements_highlighting = warning
 resharper_outdent_is_off_prev_level_highlighting = warning
 resharper_out_parameter_value_is_always_discarded_global_highlighting = warning
 resharper_overridden_with_same_value_highlighting = warning
@@ -537,6 +570,7 @@ resharper_parameter_type_can_be_enumerable_local_highlighting = warning
 resharper_pass_string_interpolation_highlighting = warning
 resharper_possible_unintended_queryable_as_enumerable_highlighting = warning
 resharper_possibly_unassigned_property_highlighting = none
+resharper_prefer_concrete_value_over_default_highlighting = none
 resharper_property_can_be_made_init_only_global_highlighting = warning
 resharper_property_can_be_made_init_only_local_highlighting = warning
 resharper_public_constructor_in_abstract_class_highlighting = warning
@@ -650,13 +684,13 @@ resharper_route_templates_parameter_constraint_can_be_specified_highlighting = w
 resharper_route_templates_parameter_type_can_be_made_stricter_highlighting = warning
 resharper_route_templates_route_parameter_is_not_passed_to_method_highlighting = warning
 resharper_safe_cast_is_used_as_type_check_highlighting = warning
+resharper_script_tag_with_content_before_includes_highlighting = warning
 resharper_separate_control_transfer_statement_highlighting = warning
 resharper_separate_local_functions_with_jump_statement_highlighting = warning
 resharper_similar_anonymous_type_nearby_highlighting = warning
 resharper_simplify_conditional_ternary_expression_highlighting = warning
 resharper_simplify_linq_expression_use_all_highlighting = warning
 resharper_simplify_linq_expression_use_any_highlighting = warning
-resharper_simplify_linq_expression_use_min_by_and_max_by_highlighting = warning
 resharper_simplify_string_interpolation_highlighting = warning
 resharper_specify_string_comparison_highlighting = warning
 resharper_string_concatenation_to_template_string_highlighting = warning
@@ -685,7 +719,9 @@ resharper_too_wide_local_variable_scope_highlighting = warning
 resharper_try_cast_always_succeeds_highlighting = warning
 resharper_try_statements_can_be_merged_highlighting = warning
 resharper_type_parameter_can_be_variant_highlighting = warning
+resharper_ul_tag_contains_non_li_elements_highlighting = warning
 resharper_unassigned_field_global_highlighting = warning
+resharper_unknown_css_vendor_extension_highlighting = warning
 resharper_unknown_item_group_highlighting = warning
 resharper_unknown_metadata_highlighting = warning
 resharper_unknown_property_highlighting = warning
@@ -715,14 +751,11 @@ resharper_use_event_args_empty_field_highlighting = warning
 resharper_use_format_specifier_in_format_string_highlighting = warning
 resharper_use_indexed_property_highlighting = warning
 resharper_use_index_from_end_expression_highlighting = warning
-resharper_use_is_operator_1_highlighting = warning
-resharper_use_is_operator_2_highlighting = warning
 resharper_use_method_any_0_highlighting = warning
 resharper_use_method_any_1_highlighting = warning
 resharper_use_method_any_2_highlighting = warning
 resharper_use_method_any_3_highlighting = warning
 resharper_use_method_any_4_highlighting = warning
-resharper_use_method_is_instance_of_type_highlighting = warning
 resharper_use_nameof_expression_for_part_of_the_string_highlighting = warning
 resharper_use_nameof_expression_highlighting = warning
 resharper_use_nameof_for_dependency_property_highlighting = warning
